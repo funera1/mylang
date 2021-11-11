@@ -1,0 +1,6 @@
+a = 1;
+b = 2;
+c = a + 100;
+a = c + a;
+print(a);
+exit;
