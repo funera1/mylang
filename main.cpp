@@ -50,7 +50,8 @@ void assignVal(int now, string funcName, vector<string> &tokens, map<string, int
             }
             //変数のとき
             else {
-                num = vals[tokens[now]];
+                string valName_ = funcName + "#" + tokens[now];
+                num = vals[valName_];
                 tmp += num * op;
             }
             now++;
@@ -59,12 +60,18 @@ void assignVal(int now, string funcName, vector<string> &tokens, map<string, int
     }
 }
 
+
 //printする
 void printFunc(int &i, string funcName, vector<string> &tokens, map<string, int> &vals){
     i++;//print
     i++;//'('
-    //変数のみ出力する
-    cout << vals[funcName + "#" + tokens[i]] << endl;
+    //式をprintできない
+    if(numOrStr(tokens[i])){
+        cout << tokens[i] << endl;
+    }
+    else {
+        cout << vals[funcName + "#" + tokens[i]] << endl;
+    }
     i++;//')'
     i++;//';'
 }
@@ -74,17 +81,28 @@ void printFunc(int &i, string funcName, vector<string> &tokens, map<string, int>
 //def func(int x, int y, int z){
 //  int r = x + y + z;
 //}
-void callFunc(int &i, string fromFuncName, vector<string> &tokens, map<string, int> &vals, map<string, vector<string>> &args){
+void callFunc(int &i, string fromFuncName, vector<string> &tokens, map<string, int> &vals, map<string, vector<string>> &args, map<string, P> &funcToScope){
+    i++;//call
     i++;//'('
     string toFuncName = tokens[i];//name
+    i++;//name
     i++;//'('
     auto funcArgs = args[toFuncName];
     int ptr = 0;
+    cout << "sz(funcArgs) = " <<  sz(funcArgs) << endl;
     while(tokens[i] != ")"){
-        if(tokens[i] == "int"){
-            i++;//"int"
-            string fromValName = fromFuncName + "#" + tokens[i];
+        if(tokens[i] != ",") {
+            int fromVal;
+            cout << ptr << " " << tokens[i] << endl;
+            if(numOrStr(tokens[i])){
+                fromVal = strToInt(tokens[i]);
+            }
+            else {
+                fromVal = vals[fromFuncName + "#" + tokens[i]];
+            }
             string toValName = funcArgs[ptr];
+            vals[toValName] = fromVal;
+            cout << toValName << " = " << vals[toValName] << endl; 
             ptr++;
         }
         i++;
@@ -92,6 +110,24 @@ void callFunc(int &i, string fromFuncName, vector<string> &tokens, map<string, i
     i++;//')'
     i++;//')'
     i++;//';'
+    
+    //関数の中身を実行する
+    string funcName = toFuncName;
+    auto [st, end] = funcToScope[funcName];
+    ptr = st + 1;
+    while(ptr < end){
+        //変数を覚えておく
+        if(tokens[ptr] == "int"){
+            assignVal(++ptr, funcName, tokens, vals);
+        }
+        if(tokens[ptr] == "print"){
+            printFunc(ptr, funcName, tokens, vals);
+        }
+        if(tokens[ptr] == "call"){
+            callFunc(ptr, funcName, tokens, vals, args, funcToScope);
+        }
+        ptr++;
+    }
 }
 
 int main(){
@@ -109,7 +145,8 @@ int main(){
             i++;//'('
             //引数
             while(tokens[i] != ")"){
-                if(tokens[i] != "int") {
+                if(tokens[i] == "int") {
+                    i++;
                     string valName = funcName + "#" + tokens[i];
                     args[funcName].pb(valName);
                     vals[valName] = 0;
@@ -141,16 +178,12 @@ int main(){
             }
             //関数名とスコープを対応させる
             funcToScope[funcName] = P(st, end);
-            if(funcName == "add"){
-                cout << st << " " << end << endl;
-            }
         }
         //地の文
         else {
             string funcName = "";
             //代入
             if(tokens[i] == "int"){
-                cout << "assign!" << endl;
                 assignVal(++i, funcName, tokens, vals);
             }
             //print
@@ -159,7 +192,7 @@ int main(){
             }
             //関数呼び出し
             if(tokens[i] == "call"){
-                callFunc(i, funcName, tokens, vals, args);
+                callFunc(i, funcName, tokens, vals, args, funcToScope);
             }
         }
     }
