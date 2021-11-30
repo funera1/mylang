@@ -31,7 +31,7 @@ vector<string> lexical(string s, set<string> keywords, set<char> separators){
 //tokenに対応する属性を返す
 
 
-vector<string> lexicalMain(){
+int main(){
 	//キーワードのsetを持つ
 	set<string> keywords;
 	{
@@ -63,5 +63,7 @@ vector<string> lexicalMain(){
 		auto lis = lexical(s, keywords, separators);
 		for(auto li : lis)tokens.pb(li);
 	}
-	return tokens;
+	//token列のtokenと対応する属性列を作る
+	//属性とは型、変数、10進数など
+
 }
