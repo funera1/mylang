@@ -1,6 +1,4 @@
-a = 1;
-b = 2;
-c = a + 100;
-a = c + a;
-print(a);
-exit;
+def hello(int x){
+    print(x);
+}
+hello(10);

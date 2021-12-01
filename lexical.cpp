@@ -53,6 +53,9 @@ vector<string> lexicalMain(){
 		separators.insert(']');
 		separators.insert(',');
 		separators.insert(';');
+		separators.insert('+');
+		separators.insert('-');
+		separators.insert('=');
 		separators.insert('\0');
 		separators.insert(' ');
 	}

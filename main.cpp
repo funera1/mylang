@@ -7,6 +7,12 @@ using P = pair<int, int>;
 #define rep(i,n)for(int i=0;(i)<(int)(n);i++)
 #define sz(s) s.size()
 
+//values 
+vector<string> tokens;
+map<string, P> funcToScope;//関数のスコープ
+map<string, vector<string>> args;//関数の引数
+map<string, int> vals;//変数
+
 //文字列から数字に
 int strToInt(string s){
     int ret = 0;
@@ -28,7 +34,8 @@ bool numOrStr(string s){
 }
 
 //変数覚える
-void assignVal(int now, string funcName, vector<string> &tokens, map<string, int> &vals){
+void assignVal(int now, string funcName){
+    now++;//int
     string valName = funcName + "#" + tokens[now];
     now++;
     bool f = true;
@@ -62,7 +69,8 @@ void assignVal(int now, string funcName, vector<string> &tokens, map<string, int
 
 
 //printする
-void printFunc(int &i, string funcName, vector<string> &tokens, map<string, int> &vals){
+void printFunc(int &i, string funcName){
+    cout << "Print" << ":";
     i++;//print
     i++;//'('
     //式をprintできない
@@ -75,13 +83,32 @@ void printFunc(int &i, string funcName, vector<string> &tokens, map<string, int>
     i++;//')'
     i++;//';'
 }
-
+void callFunc(int &i, string fromFuncName);
+void query(int &i, string funcName){
+    //代入
+    if(tokens[i] == "int"){
+        assignVal(i, funcName);
+    }
+    //print
+    else if(tokens[i] == "print"){
+        printFunc(i, funcName);
+    }
+    //関数呼び出し
+    else if(tokens[i] == "call"){
+        callFunc(i, funcName);
+    }
+    else {
+        cout << "Error: 構文エラー" << endl;
+        i++;
+        return;
+    }
+}
 //関数呼びだす
 //call(func(a, b, c));
 //def func(int x, int y, int z){
 //  int r = x + y + z;
 //}
-void callFunc(int &i, string fromFuncName, vector<string> &tokens, map<string, int> &vals, map<string, vector<string>> &args, map<string, P> &funcToScope){
+void callFunc(int &i, string fromFuncName){
     i++;//call
     i++;//'('
     string toFuncName = tokens[i];//name
@@ -89,11 +116,9 @@ void callFunc(int &i, string fromFuncName, vector<string> &tokens, map<string, i
     i++;//'('
     auto funcArgs = args[toFuncName];
     int ptr = 0;
-    cout << "sz(funcArgs) = " <<  sz(funcArgs) << endl;
     while(tokens[i] != ")"){
         if(tokens[i] != ",") {
             int fromVal;
-            cout << ptr << " " << tokens[i] << endl;
             if(numOrStr(tokens[i])){
                 fromVal = strToInt(tokens[i]);
             }
@@ -102,7 +127,6 @@ void callFunc(int &i, string fromFuncName, vector<string> &tokens, map<string, i
             }
             string toValName = funcArgs[ptr];
             vals[toValName] = fromVal;
-            cout << toValName << " = " << vals[toValName] << endl; 
             ptr++;
         }
         i++;
@@ -116,27 +140,16 @@ void callFunc(int &i, string fromFuncName, vector<string> &tokens, map<string, i
     auto [st, end] = funcToScope[funcName];
     ptr = st + 1;
     while(ptr < end){
-        //変数を覚えておく
-        if(tokens[ptr] == "int"){
-            assignVal(++ptr, funcName, tokens, vals);
-        }
-        if(tokens[ptr] == "print"){
-            printFunc(ptr, funcName, tokens, vals);
-        }
-        if(tokens[ptr] == "call"){
-            callFunc(ptr, funcName, tokens, vals, args, funcToScope);
-        }
+        query(ptr, funcName);
         ptr++;
     }
 }
 
-int main(){
-    auto tokens = lexicalMain(); 
-    map<string, P> funcToScope;//関数のスコープ
-    map<string, vector<string>> args;//関数の引数
-    map<string, int> vals;//変数
 
-    rep(i, sz(tokens)){
+
+int main(){
+    tokens = lexicalMain();
+    for(int i = 0; i < sz(tokens);){
         auto ti = tokens[i];
         //関数のとき
         if(ti == "def"){
@@ -160,16 +173,6 @@ int main(){
             if(tokens[i] == "{"){
                 while(tokens[i] != "}"){
                     i++;
-                    //変数を覚えておく
-                    // if(tokens[i] == "int"){
-                    //     assignVal(++i, funcName, tokens, vals);
-                    // }
-                    // if(tokens[i] == "print"){
-                    //     printFunc(i, tokens, vals);
-                    // }
-                    // if(tokens[i] == "call"){
-                    //     callFunc(i, funcName, tokens, vals, args);
-                    // }
                 }
                 end = i;
             }
@@ -178,22 +181,12 @@ int main(){
             }
             //関数名とスコープを対応させる
             funcToScope[funcName] = P(st, end);
+            i++;//}
         }
         //地の文
         else {
             string funcName = "";
-            //代入
-            if(tokens[i] == "int"){
-                assignVal(++i, funcName, tokens, vals);
-            }
-            //print
-            if(tokens[i] == "print"){
-                printFunc(i, funcName, tokens, vals);
-            }
-            //関数呼び出し
-            if(tokens[i] == "call"){
-                callFunc(i, funcName, tokens, vals, args, funcToScope);
-            }
+            query(i, funcName);
         }
     }
 }
