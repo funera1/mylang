@@ -1,4 +1,0 @@
-def hello(int x){
-    print(x);
-}
-hello(10);
