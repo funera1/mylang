@@ -6,9 +6,27 @@ using namespace std;
 // tokenの種類
 typedef enum tokens {
 	EOP,ID,NUMBER,INT,SEMICOLON,COMMA,LPAREN,RPAREN,LBRACE,
-	RBRACE,LBRACKET,RBRACKET,ASSIGN,NUSED
+	RBRACE,LBRACKET,RBRACKET,ASSIGN,PROGRAM,COMPOUND,STATEMENT,
+    DECLARATION_STATEMENT,ASSIGN_STATEMENT,NUSED
 } tokenkind;
 
+// fileの文字列をそのまま返す
+string fileToString(string inputFilePath){
+	ifstream ifs(inputFilePath);
+	// 読み込めなかったらエラー
+	if (ifs.fail()) {
+		cerr << "Failed to open file." << endl;
+		return "";
+	}
+	string str((istreambuf_iterator<char>(ifs)), istreambuf_iterator<char>());
+	return str;
+}
+// あるtokenから遷移するtoken列のリスト(NUSED+1はtokenkindの個数)
+vector<vector<int>> tokenToMovementList(NUSED+1);
+// 変数の初期化
+void init(){
+    
+}
 // 単語の一文字目でトークンを決め打ちする
 int firstCheckToken(char c){
 	if(('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z'))return ID;
@@ -81,16 +99,17 @@ void lexicalAnalysis(string str, vector<string>& input_stream, vector<int>& toke
 	}
 }
 
+bool parsing(vector<string>& input_stream, vector<int>& token_stream){
+    // token列を文法の通りに遷移させて、間違っていないかをチェックする。
+    int i = 0; 
+    while(i < sz(token_stream)){
+
+    }
+}
+
 int main() {
 	// 入力記号列を読み込む
-	ifstream ifs("./input.myl");
-	// 読み込めなかったらエラー
-	if (ifs.fail()) {
-		cerr << "Failed to open file." << endl;
-		return -1;
-	}
-	string str((istreambuf_iterator<char>(ifs)), istreambuf_iterator<char>());
-
+	string str = fileToString("input.txt");
 	// for(int i = 0; i < sz(str); i++)cout << i << " " << str[i] << endl;
 
 	// 字句解析
@@ -98,9 +117,15 @@ int main() {
 	vector<int> token_stream;
 	lexicalAnalysis(str, input_stream, token_stream);
 
+    // 構文解析
+    // 正しい構文ならtrue, そうでないならfalseが返ってくる
+    if(!parsing(input_stream, token_stream)){
+        cout << "ERROR: 構文が間違っています" << endl;
+        assert(-1);
+    }
 	//test
-	int n = sz(input_stream);
-	assert(n == sz(token_stream));
-	for(string i : input_stream)cout << i << " ";cout << endl;
-	for(int t : token_stream)cout << t << " ";cout << endl;
+	// int n = sz(input_stream);
+	// assert(n == sz(token_stream));
+	// for(string i : input_stream)cout << i << " ";cout << endl;
+	// for(int t : token_stream)cout << t << " ";cout << endl;
 }
