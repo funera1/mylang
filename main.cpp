@@ -2,6 +2,14 @@
 #define sz(x) (x).size()
 using namespace std;
 
+// グローバル変数
+
+// あるtokenから遷移するtoken列のリスト(NUSED+1はtokenkindの個数)
+vector<vector<int>> tokenToMovementList(NUSED+1);
+// トークンの文字列から対応するtokenkindを割り当てる
+map<string, int> tokenstringToTokenkind;
+
+
 
 // tokenの種類
 typedef enum tokens {
@@ -21,12 +29,51 @@ string fileToString(string inputFilePath){
 	string str((istreambuf_iterator<char>(ifs)), istreambuf_iterator<char>());
 	return str;
 }
-// あるtokenから遷移するtoken列のリスト(NUSED+1はtokenkindの個数)
-vector<vector<int>> tokenToMovementList(NUSED+1);
+
+// 文法の遷移を2重vectorに写す
+vector<vector<int>> bnfToList(){
+	string filename("bnf");
+	ifstream input_bnf(filename);
+	// fileが開かなければエラー
+	if(!input_bnf.is_open()){
+		cerr << "Could not open the bnf file." << endl;
+		return {{}};
+	}
+
+	string now_line = "";
+	// 1行ずつ読み込んでいく
+	while(getline(input_bnf, now_line)){
+		// コメントはスルー
+		if(now_line[0] == '/' && now_line[1] == '/')continue;
+		string src = "", dst = "";
+	}
+}
+
 // 変数の初期化
 void init(){
-    
+	// tokenstringToTokenkindの初期化
+	tokenstringToTokenkind["EOP"] = EOP;
+	tokenstringToTokenkind["ID"] = ID;
+	tokenstringToTokenkind["NUMBER"] = NUMBER;
+	tokenstringToTokenkind["INT"] = INT;
+	tokenstringToTokenkind["SEMICOLON"] = SEMICOLON;
+	tokenstringToTokenkind["COMMA"] = COMMA;
+	tokenstringToTokenkind["LPAREN"] = LPAREN;
+	tokenstringToTokenkind["RPAREN"] = RPAREN;
+	tokenstringToTokenkind["LBRACE"] = LBRACE;
+	tokenstringToTokenkind["RBRACE"] = RBRACE;
+	tokenstringToTokenkind["LBRACKET"] = LBRACKET;
+	tokenstringToTokenkind["RBRACKET"] = RBRACKET;
+	tokenstringToTokenkind["ASSIGN"] = ASSIGN;
+	tokenstringToTokenkind["PROGRAM"] = PROGRAM;
+	tokenstringToTokenkind["COMPOUND"] = COMPOUND;
+	tokenstringToTokenkind["STATEMENT"] = STATEMENT;
+	tokenstringToTokenkind["DECLARATION_STATEMENT"] = DECLARATION_STATEMENT;
+	tokenstringToTokenkind["ASSIGN_STATEMENT"] = ASSIGN_STATEMENT;
+	tokenstringToTokenkind["NUSED"] = NUSED;
+	bnfToList();
 }
+
 // 単語の一文字目でトークンを決め打ちする
 int firstCheckToken(char c){
 	if(('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z'))return ID;
