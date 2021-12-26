@@ -7,7 +7,7 @@ using namespace std;
 // あるtokenから遷移するtoken列のリスト(NUSED+1はtokenkindの個数)
 vector<vector<int>> tokenToMovementList(NUSED+1);
 // トークンの文字列から対応するtokenkindを割り当てる
-map<string, int> tokenstringToTokenkind;
+map<string, int> tokenstrToTokenkind;
 
 
 
@@ -30,6 +30,11 @@ string fileToString(string inputFilePath){
 	return str;
 }
 
+// 文字がアルファベットなら1, そうでなければ0を返す
+bool charIsAlphabet(char c){
+	return (('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z'));
+}
+
 // 文法の遷移を2重vectorに写す
 vector<vector<int>> bnfToList(){
 	string filename("bnf");
@@ -40,37 +45,106 @@ vector<vector<int>> bnfToList(){
 		return {{}};
 	}
 
+	// この関数で返す値
+	vector<vector<int>> localTokenstrToTokenkind(NUSED+1);
 	string now_line = "";
 	// 1行ずつ読み込んでいく
 	while(getline(input_bnf, now_line)){
 		// コメントはスルー
 		if(now_line[0] == '/' && now_line[1] == '/')continue;
-		string src = "", dst = "";
+
+		//srcとdstを分ける
+		string src = "";
+		vector<string> dst;
+		// separatorが ::= なら1, :=なら2になる(まだ見てないなら0)
+		int separatorKind = 0;
+		{
+			int i = 0;
+			// srcの単語を取得する
+			while(i < sz(now_line)){
+				// 今見てる文字がアルファベットならsrcに追加して続ける
+				if(charIsAlphabet(now_line[i])){
+					src.push_back(now_line[i]);
+					i++;
+				}
+				// そうでないならループから出る
+				else break;
+			}
+			// separator( ::= or := )が来るまでスルー
+			for(; i < sz(now_line); i++){
+				if(now_line[i] == ':')break;
+			}
+			// separatorの種類を判定
+			if(now_line[i] == ':'){
+				// := のとき
+				if(now_line[i + 1] == '='){
+					separatorKind = 2;
+					i += 2;
+				}
+				// ::= のとき
+				else if(now_line[i + 1] == ':' && now_line[i + 2] == '='){
+					separatorKind = 1;
+					i += 3;
+				}
+				// それ以外のとき
+				else {
+					cerr << "separatorが:=でも::=でもない" << endl;
+					assert(0);
+				}
+			}
+			// アルファベットが来るまで読み飛ばす
+			for(; i < sz(now_line); i++){
+				if(charIsAlphabet(now_line[i]))break;
+			}
+			// ::=のとき
+			if(separatorKind == 1){
+				while(i < sz(now_line)){
+					string word = "";
+					while(i < sz(now_line)){
+						// 文字がアルファベットなら続ける
+						if(charIsAlphabet(now_line[i])){
+							word.push_back(now_line[i]);
+							i++;
+						}
+						else break;
+					}
+					// アルファベットが来るまで読み飛ばす
+					for(; i < sz(now_line); i++){
+						if(charIsAlphabet(now_line[i]))break;
+					}
+					dst.push_back(word);
+				}
+			}
+			// :=のとき
+			if(separatorKind == 2){
+
+			}
+		}
 	}
 }
 
 // 変数の初期化
 void init(){
-	// tokenstringToTokenkindの初期化
-	tokenstringToTokenkind["EOP"] = EOP;
-	tokenstringToTokenkind["ID"] = ID;
-	tokenstringToTokenkind["NUMBER"] = NUMBER;
-	tokenstringToTokenkind["INT"] = INT;
-	tokenstringToTokenkind["SEMICOLON"] = SEMICOLON;
-	tokenstringToTokenkind["COMMA"] = COMMA;
-	tokenstringToTokenkind["LPAREN"] = LPAREN;
-	tokenstringToTokenkind["RPAREN"] = RPAREN;
-	tokenstringToTokenkind["LBRACE"] = LBRACE;
-	tokenstringToTokenkind["RBRACE"] = RBRACE;
-	tokenstringToTokenkind["LBRACKET"] = LBRACKET;
-	tokenstringToTokenkind["RBRACKET"] = RBRACKET;
-	tokenstringToTokenkind["ASSIGN"] = ASSIGN;
-	tokenstringToTokenkind["PROGRAM"] = PROGRAM;
-	tokenstringToTokenkind["COMPOUND"] = COMPOUND;
-	tokenstringToTokenkind["STATEMENT"] = STATEMENT;
-	tokenstringToTokenkind["DECLARATION_STATEMENT"] = DECLARATION_STATEMENT;
-	tokenstringToTokenkind["ASSIGN_STATEMENT"] = ASSIGN_STATEMENT;
-	tokenstringToTokenkind["NUSED"] = NUSED;
+	// tokenstrToTokenkindの初期化
+	tokenstrToTokenkind["EOP"] = EOP;
+	tokenstrToTokenkind["ID"] = ID;
+	tokenstrToTokenkind["NUMBER"] = NUMBER;
+	tokenstrToTokenkind["INT"] = INT;
+	tokenstrToTokenkind["SEMICOLON"] = SEMICOLON;
+	tokenstrToTokenkind["COMMA"] = COMMA;
+	tokenstrToTokenkind["LPAREN"] = LPAREN;
+	tokenstrToTokenkind["RPAREN"] = RPAREN;
+	tokenstrToTokenkind["LBRACE"] = LBRACE;
+	tokenstrToTokenkind["RBRACE"] = RBRACE;
+	tokenstrToTokenkind["LBRACKET"] = LBRACKET;
+	tokenstrToTokenkind["RBRACKET"] = RBRACKET;
+	tokenstrToTokenkind["ASSIGN"] = ASSIGN;
+	tokenstrToTokenkind["PROGRAM"] = PROGRAM;
+	tokenstrToTokenkind["COMPOUND"] = COMPOUND;
+	tokenstrToTokenkind["STATEMENT"] = STATEMENT;
+	tokenstrToTokenkind["DECLARATION_STATEMENT"] = DECLARATION_STATEMENT;
+	tokenstrToTokenkind["ASSIGN_STATEMENT"] = ASSIGN_STATEMENT;
+	tokenstrToTokenkind["NUSED"] = NUSED;
 	bnfToList();
 }
 
