@@ -1,4 +1,8 @@
 // 文法
+// ルール
+// ::= は左辺が非終端記号で右辺がその非終端記号から遷移する(非)終端記号列
+// := は左辺が非終端記号で右辺が終端記号１つ
+// 全ての非終端記号は必ず終端記号のみの列に収束する必要がある
 
 PROGRAM ::= LBRACKET COMPOUND RBRACKET
 COMPOUND ::= STATEMENT | STATEMENT COMPOUND
