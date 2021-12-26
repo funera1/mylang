@@ -51,7 +51,7 @@ vector<vector<int>> bnfToList(){
 	// 1行ずつ読み込んでいく
 	while(getline(input_bnf, now_line)){
 		// コメントはスルー
-		if(now_line[0] == '/' && now_line[1] == '/')continue;
+		if(sz(now_line) >= 2 && now_line[0] == '/' && now_line[1] == '/')continue;
 
 		//srcとdstを分ける
 		string src = "";
