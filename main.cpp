@@ -5,15 +5,16 @@ using namespace std;
 // グローバル変数
 
 // あるtokenから遷移するtoken列のリスト(NUSED+1はtokenkindの個数)
-vector<vector<int>> tokenToMovementList(NUSED+1);
+vector<vector<int>> tokenTransTable(NUSED+1);
 // トークンの文字列から対応するtokenkindを割り当てる
 map<string, int> tokenstrToTokenkind;
-
+// 終端記号の集合
+set<string> terminalSymbols;
 
 
 // tokenの種類
 typedef enum tokens {
-	EOP,ID,NUMBER,INT,SEMICOLON,COMMA,LPAREN,RPAREN,LBRACE,
+	TERMINAL,EOP,ID,NUMBER,INT,SEMICOLON,COMMA,LPAREN,RPAREN,LBRACE,
 	RBRACE,LBRACKET,RBRACKET,ASSIGN,PROGRAM,COMPOUND,STATEMENT,
     DECLARATION_STATEMENT,ASSIGN_STATEMENT,NUSED
 } tokenkind;
@@ -35,6 +36,7 @@ bool charIsAlphabet(char c){
 	return (('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z'));
 }
 
+
 // 文法の遷移を2重vectorに写す
 vector<vector<int>> bnfToList(){
 	string filename("bnf");
@@ -46,7 +48,7 @@ vector<vector<int>> bnfToList(){
 	}
 
 	// この関数で返す値
-	vector<vector<int>> localTokenstrToTokenkind(NUSED+1);
+	vector<vector<int>> localTokenTransTable(NUSED+1);
 	string now_line = "";
 	// 1行ずつ読み込んでいく
 	while(getline(input_bnf, now_line)){
@@ -117,15 +119,32 @@ vector<vector<int>> bnfToList(){
 			}
 			// :=のとき
 			if(separatorKind == 2){
-
+				// 右辺は一つのtokenで終端記号
+				string word = "";
+				// 空白を読み飛ばす
+				for(; i < sz(now_line); i++){
+					if(!(now_line[i] == ' ' || now_line[i] == '\t'))break;
+				}
+				// 文字列を読み取る
+				for(; i < sz(now_line); i++){
+					if(now_line[i] == ' ' || now_line[i] == '\t')break;
+					word.push_back(now_line[i]);
+				}
+				// 終端記号列
+				terminalSymbols.insert(word);
+				dst.push_back(word);
 			}
 		}
+		// srcとdstをloalTokenstrToTokenkind
+		localTokenTransTable.resize(sz(dst));
+		localTokenTransTable[tokenstrToTokenkind[src]] = dst;
 	}
 }
 
 // 変数の初期化
 void init(){
 	// tokenstrToTokenkindの初期化
+	tokenstrToTokenkind["TERMINAL"] = TERMINAL;
 	tokenstrToTokenkind["EOP"] = EOP;
 	tokenstrToTokenkind["ID"] = ID;
 	tokenstrToTokenkind["NUMBER"] = NUMBER;
