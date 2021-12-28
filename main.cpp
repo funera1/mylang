@@ -5,7 +5,7 @@ using namespace std;
 // グローバル変数
 
 // あるtokenから遷移するtoken列のリスト(NUSED+1はtokenkindの個数)
-vector<vector<int>> tokenTransTable(NUSED+1);
+vector<vector<vector<int>>> tokenTransTable(NUSED+1, vector<vector<int>>(100));
 // トークンの文字列から対応するtokenkindを割り当てる
 map<string, int> tokenstrToTokenkind;
 // 終端記号の集合
@@ -36,6 +36,21 @@ bool charIsAlphabet(char c){
 	return (('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z'));
 }
 
+// 現在の位置から次の連続した文字列を取得する
+string getNextStr(string baseStr, int& now_cursol){
+	// 次の文字が来るまで空白とタブ文字と改行を捨てる
+	for(; now_cursol < sz(baseStr); now_cursol++){
+		if(baseStr[now_cursol] == ' ' || baseStr[now_cursol] == '\t' || baseStr[now_cursol] == '\n')continue;
+		break;
+	}
+	// 連続した文字列を取得する
+	string next_str = "";
+	for(; now_cursol < sz(baseStr); now_cursol++){
+		if(baseStr[now_cursol] == ' ' || baseStr[now_cursol] == '\t' || baseStr[now_cursol] == '\n')break;
+		next_str.push_back(baseStr[now_cursol]);
+	}
+	return next_str;
+}
 
 // 文法の遷移を2重vectorに写す
 vector<vector<int>> bnfToList(){
@@ -48,7 +63,7 @@ vector<vector<int>> bnfToList(){
 	}
 
 	// この関数で返す値
-	vector<vector<int>> localTokenTransTable(NUSED+1);
+	vector<vector<vector<int>>> localTokenTransTable(NUSED+1);
 	string now_line = "";
 	// 1行ずつ読み込んでいく
 	while(getline(input_bnf, now_line)){
@@ -57,25 +72,18 @@ vector<vector<int>> bnfToList(){
 
 		//srcとdstを分ける
 		string src = "";
-		vector<string> dst;
+		vector<vector<int>> dst;
 		// separatorが ::= なら1, :=なら2になる(まだ見てないなら0)
 		int separatorKind = 0;
 		{
 			int i = 0;
 			// srcの単語を取得する
-			while(i < sz(now_line)){
-				// 今見てる文字がアルファベットならsrcに追加して続ける
-				if(charIsAlphabet(now_line[i])){
-					src.push_back(now_line[i]);
-					i++;
-				}
-				// そうでないならループから出る
-				else break;
-			}
+			src = getNextStr(now_line, i);
 			// separator( ::= or := )が来るまでスルー
-			for(; i < sz(now_line); i++){
-				if(now_line[i] == ':')break;
-			}
+			string separator = getNextStr(now_line, i);
+			// for(; i < sz(now_line); i++){
+			// 	if(now_line[i] == ':')break;
+			// }
 			// separatorの種類を判定
 			if(now_line[i] == ':'){
 				// := のとき
@@ -100,6 +108,7 @@ vector<vector<int>> bnfToList(){
 			}
 			// ::=のとき
 			if(separatorKind == 1){
+				int cnt = 0;
 				while(i < sz(now_line)){
 					string word = "";
 					while(i < sz(now_line)){
@@ -112,9 +121,11 @@ vector<vector<int>> bnfToList(){
 					}
 					// アルファベットが来るまで読み飛ばす
 					for(; i < sz(now_line); i++){
+						// |は別の遷移する記号列
+						if(now_line[i] = '|')cnt++;
 						if(charIsAlphabet(now_line[i]))break;
 					}
-					dst.push_back(word);
+					dst[cnt].push_back(word);
 				}
 			}
 			// :=のとき
@@ -132,7 +143,7 @@ vector<vector<int>> bnfToList(){
 				}
 				// 終端記号列
 				terminalSymbols.insert(word);
-				dst.push_back(word);
+				dst.push_back();
 			}
 		}
 		// srcとdstをloalTokenstrToTokenkind
