@@ -80,8 +80,6 @@ vector<vector<vector<string>>> bnfToList(){
 		//srcとdstを分ける
 		string src = "";
 		vector<vector<string>> dst;
-		// separatorが ::= なら1, :=なら2になる(まだ見てないなら0)
-		int separatorKind = 0;
 		{
 			int i = 0;
 			// srcの単語を取得する
