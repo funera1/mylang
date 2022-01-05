@@ -2,21 +2,27 @@
 #define sz(x) (x).size()
 using namespace std;
 
-// グローバル変数
-
-// あるtokenから遷移するtoken列のリスト(NUSED+1はtokenkindの個数)
-vector<vector<int>> tokenToMovementList(NUSED+1);
-// トークンの文字列から対応するtokenkindを割り当てる
-map<string, int> tokenstrToTokenkind;
-
-
-
+// 定数
+static int TOKEN_TRANS_TABLE_MAX_SIZE = 100;
 // tokenの種類
 typedef enum tokens {
-	EOP,ID,NUMBER,INT,SEMICOLON,COMMA,LPAREN,RPAREN,LBRACE,
+	TERMINAL,EOP,ID,NUMBER,INT,SEMICOLON,COMMA,LPAREN,RPAREN,LBRACE,
 	RBRACE,LBRACKET,RBRACKET,ASSIGN,PROGRAM,COMPOUND,STATEMENT,
     DECLARATION_STATEMENT,ASSIGN_STATEMENT,NUSED
 } tokenkind;
+
+// グローバル変数
+
+// あるtokenから遷移するtoken列のリスト(NUSED+1はtokenkindの個数)
+// 例) tokenTransTable[PROGRAM] = {{"LBRACKET", "COMPOUND", "RBRACKET"}}
+vector<vector<vector<string>>> tokenTransTable(NUSED+1, vector<vector<string>>(TOKEN_TRANS_TABLE_MAX_SIZE));
+// トークンの文字列から対応するtokenkindを割り当てる
+map<string, int> tokenstrToTokenkind;
+// 終端記号の集合
+set<string> terminalSymbols;
+
+
+
 
 // fileの文字列をそのまま返す
 string fileToString(string inputFilePath){
@@ -35,97 +41,85 @@ bool charIsAlphabet(char c){
 	return (('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z'));
 }
 
+// 現在の位置から次の連続した文字列を取得する
+string getNextStr(string baseStr, int& now_cursol){
+	// 次の文字が来るまで空白とタブ文字と改行を捨てる
+	for(; now_cursol < sz(baseStr); now_cursol++){
+		if(baseStr[now_cursol] == ' ' || baseStr[now_cursol] == '\t' || baseStr[now_cursol] == '\n')continue;
+		break;
+	}
+	// 連続した文字列を取得する
+	string next_str = "";
+	for(; now_cursol < sz(baseStr); now_cursol++){
+		if(baseStr[now_cursol] == ' ' || baseStr[now_cursol] == '\t' || baseStr[now_cursol] == '\n')break;
+		next_str.push_back(baseStr[now_cursol]);
+	}
+	return next_str;
+}
+
 // 文法の遷移を2重vectorに写す
-vector<vector<int>> bnfToList(){
+vector<vector<vector<string>>> bnfToList(){
 	string filename("bnf");
 	ifstream input_bnf(filename);
 	// fileが開かなければエラー
 	if(!input_bnf.is_open()){
 		cerr << "Could not open the bnf file." << endl;
-		return {{}};
+		return {};
 	}
 
 	// この関数で返す値
-	vector<vector<int>> localTokenstrToTokenkind(NUSED+1);
+	vector<vector<vector<string>>> localTokenTransTable(NUSED+1, vector<vector<string>>(TOKEN_TRANS_TABLE_MAX_SIZE));
 	string now_line = "";
 	// 1行ずつ読み込んでいく
 	while(getline(input_bnf, now_line)){
 		// コメントはスルー
-		if(now_line[0] == '/' && now_line[1] == '/')continue;
+		if(sz(now_line) >= 2 && now_line[0] == '/' && now_line[1] == '/')continue;
+		// 空行もスルー
+		if(now_line == "")continue;
 
 		//srcとdstを分ける
 		string src = "";
-		vector<string> dst;
+		vector<vector<string>> dst;
 		// separatorが ::= なら1, :=なら2になる(まだ見てないなら0)
 		int separatorKind = 0;
 		{
 			int i = 0;
 			// srcの単語を取得する
-			while(i < sz(now_line)){
-				// 今見てる文字がアルファベットならsrcに追加して続ける
-				if(charIsAlphabet(now_line[i])){
-					src.push_back(now_line[i]);
-					i++;
-				}
-				// そうでないならループから出る
-				else break;
-			}
-			// separator( ::= or := )が来るまでスルー
-			for(; i < sz(now_line); i++){
-				if(now_line[i] == ':')break;
-			}
-			// separatorの種類を判定
-			if(now_line[i] == ':'){
-				// := のとき
-				if(now_line[i + 1] == '='){
-					separatorKind = 2;
-					i += 2;
-				}
-				// ::= のとき
-				else if(now_line[i + 1] == ':' && now_line[i + 2] == '='){
-					separatorKind = 1;
-					i += 3;
-				}
-				// それ以外のとき
-				else {
-					cerr << "separatorが:=でも::=でもない" << endl;
-					assert(0);
-				}
-			}
-			// アルファベットが来るまで読み飛ばす
-			for(; i < sz(now_line); i++){
-				if(charIsAlphabet(now_line[i]))break;
-			}
+			src = getNextStr(now_line, i);
+			// separator( ::= or := )を取得
+			string separator = getNextStr(now_line, i);
 			// ::=のとき
-			if(separatorKind == 1){
+			if(separator == "::="){
+				int cnt = 0;
 				while(i < sz(now_line)){
-					string word = "";
-					while(i < sz(now_line)){
-						// 文字がアルファベットなら続ける
-						if(charIsAlphabet(now_line[i])){
-							word.push_back(now_line[i]);
-							i++;
-						}
-						else break;
-					}
-					// アルファベットが来るまで読み飛ばす
-					for(; i < sz(now_line); i++){
-						if(charIsAlphabet(now_line[i]))break;
-					}
-					dst.push_back(word);
+					string word = getNextStr(now_line, i);
+					if(word == "|")cnt++;
+					else localTokenTransTable[tokenstrToTokenkind[src]][cnt].push_back(word);
 				}
 			}
 			// :=のとき
-			if(separatorKind == 2){
-
+			else if(separator == ":="){
+				// 右辺は一つのtokenで終端記号
+				string word = getNextStr(now_line, i);
+				// 終端記号列
+				terminalSymbols.insert(word);
+			}
+			// それ以外ならエラー
+			else {
+				cerr << "separatorが:=でも::=でもない" << endl;
+				assert(0);
 			}
 		}
+		// srcとdstをloalTokenstrToTokenkind
+		// localTokenTransTable.resize(sz(dst));
+		// localTokenTransTable[tokenstrToTokenkind[src]] = dst;
 	}
 }
 
 // 変数の初期化
 void init(){
 	// tokenstrToTokenkindの初期化
+	tokenstrToTokenkind["TERMINAL"] = TERMINAL;
 	tokenstrToTokenkind["EOP"] = EOP;
 	tokenstrToTokenkind["ID"] = ID;
 	tokenstrToTokenkind["NUMBER"] = NUMBER;
@@ -233,6 +227,9 @@ int main() {
 	string str = fileToString("input.txt");
 	// for(int i = 0; i < sz(str); i++)cout << i << " " << str[i] << endl;
 
+	// 初期化
+	init();
+
 	// 字句解析
 	vector<string> input_stream;
 	vector<int> token_stream;
@@ -240,10 +237,10 @@ int main() {
 
     // 構文解析
     // 正しい構文ならtrue, そうでないならfalseが返ってくる
-    if(!parsing(input_stream, token_stream)){
-        cout << "ERROR: 構文が間違っています" << endl;
-        assert(-1);
-    }
+    // if(!parsing(input_stream, token_stream)){
+    //     cout << "ERROR: 構文が間違っています" << endl;
+    //     assert(-1);
+    // }
 	//test
 	// int n = sz(input_stream);
 	// assert(n == sz(token_stream));
