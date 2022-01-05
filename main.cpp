@@ -57,7 +57,7 @@ string getNextStr(string baseStr, int& now_cursol){
 	return next_str;
 }
 
-// 文法の遷移を2重vectorに写す
+// 文法の遷移を3重vectorに写す
 vector<vector<vector<string>>> bnfToList(){
 	string filename("bnf");
 	ifstream input_bnf(filename);
@@ -112,6 +112,7 @@ vector<vector<vector<string>>> bnfToList(){
 		// localTokenTransTable.resize(sz(dst));
 		// localTokenTransTable[tokenstrToTokenkind[src]] = dst;
 	}
+	return localTokenTransTable;
 }
 
 // 変数の初期化
@@ -137,7 +138,7 @@ void init(){
 	tokenstrToTokenkind["DECLARATION_STATEMENT"] = DECLARATION_STATEMENT;
 	tokenstrToTokenkind["ASSIGN_STATEMENT"] = ASSIGN_STATEMENT;
 	tokenstrToTokenkind["NUSED"] = NUSED;
-	bnfToList();
+	tokenTransTable = bnfToList();
 }
 
 // 単語の一文字目でトークンを決め打ちする
@@ -227,6 +228,13 @@ int main() {
 
 	// 初期化
 	init();
+	// test
+	auto PROGRAM_T = tokenTransTable[LBRACKET];
+	for(int i = 0; i < sz(PROGRAM_T); i++){
+		auto Pi = PROGRAM_T[i];
+		for(int j = 0; j < sz(Pi); j++)cout << Pi[j] << " ";
+		cout << endl;
+	}
 
 	// 字句解析
 	vector<string> input_stream;
