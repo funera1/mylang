@@ -212,7 +212,10 @@ void lexicalAnalysis(string str, vector<string>& input_stream, vector<int>& toke
 
 // LL(1)法の準備
 void createFirstSet(){
-
+	// ある非終端記号から生成規則を適用することで導出される、記号列の中で先頭に
+	// 現れる終端記号の集合
+	// 例)firstSet["PROGRAM"] = {"{"}
+	map<string, set<string>> firstSet;
 }
 bool parsing(vector<string>& input_stream, vector<int>& token_stream){
     // token列を文法の通りに遷移させて、間違っていないかをチェックする。
