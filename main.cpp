@@ -228,13 +228,6 @@ int main() {
 
 	// 初期化
 	init();
-	// test
-	auto PROGRAM_T = tokenTransTable[LBRACKET];
-	for(int i = 0; i < sz(PROGRAM_T); i++){
-		auto Pi = PROGRAM_T[i];
-		for(int j = 0; j < sz(Pi); j++)cout << Pi[j] << " ";
-		cout << endl;
-	}
 
 	// 字句解析
 	vector<string> input_stream;
