@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 #define sz(x) (x).size()
 using namespace std;
+using Pbnf = pair<string, vector<string>>;
 
 // 定数
 static int TOKEN_TRANS_TABLE_MAX_SIZE = 100;
@@ -14,8 +15,8 @@ typedef enum tokens {
 // グローバル変数
 
 // あるtokenから遷移するtoken列のリスト(NUSED+1はtokenkindの個数)
-// 例) tokenTransTable[PROGRAM] = {{"LBRACKET", "COMPOUND", "RBRACKET"}}
-vector<vector<vector<string>>> tokenTransTable(NUSED+1, vector<vector<string>>(TOKEN_TRANS_TABLE_MAX_SIZE));
+// 例) tokenTransTable[0] = Pbnf("PROGRAM", {"LBRACKET", "COMPOUND", "RBRACKET"})
+vector<Pbnf> tokenTransTable;
 // トークンの文字列から対応するtokenkindを割り当てる
 map<string, int> tokenstrToTokenkind;
 // 終端記号の集合
@@ -58,7 +59,7 @@ string getNextStr(string baseStr, int& now_cursol){
 }
 
 // 文法の遷移を3重vectorに写す
-vector<vector<vector<string>>> bnfToList(){
+vector<Pbnf> bnfToList(){
 	string filename("bnf");
 	ifstream input_bnf(filename);
 	// fileが開かなければエラー
@@ -68,7 +69,7 @@ vector<vector<vector<string>>> bnfToList(){
 	}
 
 	// この関数で返す値
-	vector<vector<vector<string>>> localTokenTransTable(NUSED+1, vector<vector<string>>(TOKEN_TRANS_TABLE_MAX_SIZE));
+	vector<Pbnf> localTokenTransTable;
 	string now_line = "";
 	// 1行ずつ読み込んでいく
 	while(getline(input_bnf, now_line)){
@@ -79,7 +80,7 @@ vector<vector<vector<string>>> bnfToList(){
 
 		//srcとdstを分ける
 		string src = "";
-		vector<vector<string>> dst;
+		vector<string> dst;
 		{
 			int i = 0;
 			// srcの単語を取得する
@@ -88,11 +89,9 @@ vector<vector<vector<string>>> bnfToList(){
 			string separator = getNextStr(now_line, i);
 			// ::=のとき
 			if(separator == "::="){
-				int cnt = 0;
 				while(i < sz(now_line)){
 					string word = getNextStr(now_line, i);
-					if(word == "|")cnt++;
-					else localTokenTransTable[tokenstrToTokenkind[src]][cnt].push_back(word);
+					dst.push_back(word);
 				}
 			}
 			// :=のとき
@@ -107,10 +106,8 @@ vector<vector<vector<string>>> bnfToList(){
 				cerr << "separatorが:=でも::=でもない" << endl;
 				assert(0);
 			}
+			localTokenTransTable.push_back(Pbnf(src, dst));
 		}
-		// srcとdstをloalTokenstrToTokenkind
-		// localTokenTransTable.resize(sz(dst));
-		// localTokenTransTable[tokenstrToTokenkind[src]] = dst;
 	}
 	return localTokenTransTable;
 }
