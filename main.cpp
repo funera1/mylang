@@ -210,12 +210,14 @@ void lexicalAnalysis(string str, vector<string>& input_stream, vector<int>& toke
 	}
 }
 
+// LL(1)法の準備
+void createFirstSet(){
+
+}
 bool parsing(vector<string>& input_stream, vector<int>& token_stream){
     // token列を文法の通りに遷移させて、間違っていないかをチェックする。
     int i = 0; 
-    while(i < sz(token_stream)){
-
-    }
+	createFirstSet();
 }
 
 int main() {
