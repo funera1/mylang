@@ -216,6 +216,16 @@ void createFirstSet(){
 	// 現れる終端記号の集合
 	// 例)firstSet["PROGRAM"] = {"{"}
 	map<string, set<string>> firstSet;
+	
+	// 一度終端非終端区別せずにfirstSetに先頭を追加する
+	for(Pbnf pbnf : tokenTransTable){
+		auto [src, dst] = pbnf;
+		firstSet[src].insert(dst[0]);
+	}
+	// firstSetの中にある非終端記号を何回か遷移して終端記号に置換する
+	for(auto fs : firstSet){
+		
+	}
 }
 bool parsing(vector<string>& input_stream, vector<int>& token_stream){
     // token列を文法の通りに遷移させて、間違っていないかをチェックする。
