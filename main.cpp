@@ -2,19 +2,6 @@
 #include "init.cpp"
 #include "tools.cpp"
 
-// グローバル変数
-
-// あるtokenから遷移するtoken列のリスト(NUSED+1はtokenkindの個数)
-// 例) tokenTransTable[0] = Pbnf("PROGRAM", {"LBRACKET", "COMPOUND", "RBRACKET"})
-vector<Pbnf> tokenTransTable;
-// トークンの文字列から対応するtokenkindを割り当てる
-map<string, int> tokenstrToTokenkind;
-// 終端記号の集合
-set<string> terminalSymbols;
-
-
-
-
 // 字句解析
 // 入力記号列strをtoken毎に分割し、
 void lexicalAnalysis(string str, vector<string>& input_stream, vector<int>& token_stream){

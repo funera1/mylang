@@ -1,32 +1,15 @@
 #include "include.hpp"
 #include "tools.cpp"
-
-
-// グローバル変数
-
-// あるtokenから遷移するtoken列のリスト(NUSED+1はtokenkindの個数)
-// 例) tokenTransTable[0] = Pbnf("PROGRAM", {"LBRACKET", "COMPOUND", "RBRACKET"})
-vector<Pbnf> tokenTransTable;
-// トークンの文字列から対応するtokenkindを割り当てる
-map<string, int> tokenstrToTokenkind;
-// 終端記号の集合
-set<string> terminalSymbols;
+#include "global_values.hpp"
 
 
 // 文法の遷移を3重vectorに写す
 vector<Pbnf> bnfToList(){
-	string filename("bnf");
-	ifstream input_bnf(filename);
-	// fileが開かなければエラー
-	if(!input_bnf.is_open()){
-		cerr << "Could not open the bnf file." << endl;
-		return {};
-	}
+	ifstream input_bnf = fileToIfstream("bnf");
 
 	// この関数で返す値
-	vector<Pbnf> localTokenTransTable;
+	vector<Pbnf> local_token_trans_table;
 	string now_line = "";
-	// 1行ずつ読み込んでいく
 	while(getline(input_bnf, now_line)){
 		// コメントはスルー
 		if(sz(now_line) >= 2 && now_line[0] == '/' && now_line[1] == '/')continue;
@@ -54,41 +37,43 @@ vector<Pbnf> bnfToList(){
 				// 右辺は一つのtokenで終端記号
 				string word = getNextStr(now_line, i);
 				// 終端記号列
-				terminalSymbols.insert(word);
+				terminal_symbols.insert(word);
 			}
 			// それ以外ならエラー
 			else {
 				cerr << "separatorが:=でも::=でもない" << endl;
 				assert(0);
 			}
-			localTokenTransTable.push_back(Pbnf(src, dst));
+			// TODO: bnf_src_to_dstとtoken_trans_tableどっちも共通した過程を踏むのにtoken_trans_tableのための関数になっているので調整する
+			bnf_src_to_dst[src].push_back(dst);
+			local_token_trans_table.push_back(Pbnf(src, dst));
 		}
 	}
-	return localTokenTransTable;
+	return local_token_trans_table;
 }
 
 // 変数の初期化
 void init(){
-	// tokenstrToTokenkindの初期化
-	tokenstrToTokenkind["TERMINAL"] = TERMINAL;
-	tokenstrToTokenkind["EOP"] = EOP;
-	tokenstrToTokenkind["ID"] = ID;
-	tokenstrToTokenkind["NUMBER"] = NUMBER;
-	tokenstrToTokenkind["INT"] = INT;
-	tokenstrToTokenkind["SEMICOLON"] = SEMICOLON;
-	tokenstrToTokenkind["COMMA"] = COMMA;
-	tokenstrToTokenkind["LPAREN"] = LPAREN;
-	tokenstrToTokenkind["RPAREN"] = RPAREN;
-	tokenstrToTokenkind["LBRACE"] = LBRACE;
-	tokenstrToTokenkind["RBRACE"] = RBRACE;
-	tokenstrToTokenkind["LBRACKET"] = LBRACKET;
-	tokenstrToTokenkind["RBRACKET"] = RBRACKET;
-	tokenstrToTokenkind["ASSIGN"] = ASSIGN;
-	tokenstrToTokenkind["PROGRAM"] = PROGRAM;
-	tokenstrToTokenkind["COMPOUND"] = COMPOUND;
-	tokenstrToTokenkind["STATEMENT"] = STATEMENT;
-	tokenstrToTokenkind["DECLARATION_STATEMENT"] = DECLARATION_STATEMENT;
-	tokenstrToTokenkind["ASSIGN_STATEMENT"] = ASSIGN_STATEMENT;
-	tokenstrToTokenkind["NUSED"] = NUSED;
-	tokenTransTable = bnfToList();
+	// tokenstr_to_tokenkindの初期化
+	tokenstr_to_tokenkind["TERMINAL"] = TERMINAL;
+	tokenstr_to_tokenkind["EOP"] = EOP;
+	tokenstr_to_tokenkind["ID"] = ID;
+	tokenstr_to_tokenkind["NUMBER"] = NUMBER;
+	tokenstr_to_tokenkind["INT"] = INT;
+	tokenstr_to_tokenkind["SEMICOLON"] = SEMICOLON;
+	tokenstr_to_tokenkind["COMMA"] = COMMA;
+	tokenstr_to_tokenkind["LPAREN"] = LPAREN;
+	tokenstr_to_tokenkind["RPAREN"] = RPAREN;
+	tokenstr_to_tokenkind["LBRACE"] = LBRACE;
+	tokenstr_to_tokenkind["RBRACE"] = RBRACE;
+	tokenstr_to_tokenkind["LBRACKET"] = LBRACKET;
+	tokenstr_to_tokenkind["RBRACKET"] = RBRACKET;
+	tokenstr_to_tokenkind["ASSIGN"] = ASSIGN;
+	tokenstr_to_tokenkind["PROGRAM"] = PROGRAM;
+	tokenstr_to_tokenkind["COMPOUND"] = COMPOUND;
+	tokenstr_to_tokenkind["STATEMENT"] = STATEMENT;
+	tokenstr_to_tokenkind["DECLARATION_STATEMENT"] = DECLARATION_STATEMENT;
+	tokenstr_to_tokenkind["ASSIGN_STATEMENT"] = ASSIGN_STATEMENT;
+	tokenstr_to_tokenkind["NUSED"] = NUSED;
+	token_trans_table = bnfToList();
 }

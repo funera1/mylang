@@ -58,3 +58,22 @@ int checkIdIsToken(string s){
 	if(s == "int")return INT;
 	else return ID;
 }
+
+// 終端記号かチェック
+bool is_term(string s){
+	if(sz(s) == 0)return false;
+	// 非終端記号は全て大文字、終端記号は全て小文字である
+	if('A' <= s[0] && s[0] <= 'Z')return false;
+	else return true;
+}
+
+ifstream fileToIfstream(string file_path){
+	string file_name(file_path);
+	ifstream input_bnf(file_name);
+	// fileが開かなければエラー
+	if(!input_bnf.is_open()){
+		cerr << "Could not open the bnf file." << endl;
+		assert(0);
+	}
+	return input_bnf;
+}
