@@ -67,6 +67,14 @@ bool is_term(string s){
 	else return true;
 }
 
+bool all_is_term_in_set(set<string> st){
+	bool all_is_term = true;
+	for(auto si : st){
+		if(!is_term(si))all_is_term = false;
+	}
+	return all_is_term;
+}
+
 ifstream fileToIfstream(string file_path){
 	string file_name(file_path);
 	ifstream input_bnf(file_name);
