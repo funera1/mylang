@@ -2,25 +2,36 @@
 #include "global_values.hpp"
 #include "tools.cpp"
 
-void createFirstSet(){
+map<string, set<string>> create_first_set(){
 	// とりあえず一つの非終端記号についてだけやる->全ての非終端記号についてやる
-	map<string, set<string>> firstSets;
+	map<string, set<string>> first_sets;
 	// 全ての非終端記号を見る
 	for(auto [src, dst] : token_trans_table){
 		// 既に見てたら飛ばす
-		if(!firstSets[src].empty())continue;
-		set<string> firstSet;
+		if(!first_sets[src].empty())continue;
+		set<string> first_set;
 		// 最初は自分自身の非終端記号を持ってスタート
-		firstSet.insert(src);
-		while(!all_is_term_in_set(firstSet)){
-			set<string> firstSetTmp;
-			for(auto si : firstSet){
+		first_set.insert(src);
+		while(!all_is_term_in_set(first_set)){
+			set<string> first_setTmp;
+			for(auto si : first_set){
 				for(auto dst_i : bnf_src_to_dst[si]){
-					firstSetTmp.insert(dst_i[0]);
+					first_setTmp.insert(dst_i[0]);
 				}
 			}
-			firstSet = firstSetTmp;
+			first_set = first_setTmp;
 		}
-		firstSets[src] = firstSet;
+		first_sets[src] = first_set;
 	}
+	return first_sets;
 }
+
+// 途中
+// 空文字を定義してないから作れなさそうだし、まだ必要ないかも
+// void create_follow_set(map<string, set<string>> first_set){
+// 	map<string, set<string>> follow_sets;
+// 	for(auto [src, dst] : token_trans_table){
+// 		if(!follow_sets[src].empty())continue;
+// 		set<string> follow_set;
+// 	}
+// }
