@@ -1,4 +1,5 @@
-#include "include.hpp"
+#pragma once
+#include "include.cpp"
 #include "global_values.hpp"
 #include "tools.cpp"
 

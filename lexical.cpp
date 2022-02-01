@@ -1,3 +1,4 @@
+#pragma once
 #include "include.cpp"
 #include "init.cpp"
 

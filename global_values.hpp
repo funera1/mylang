@@ -1,3 +1,4 @@
+#pragma once
 #include "include.cpp"
 // あるtokenから遷移するtoken列のリスト(NUSED+1はtokenkindの個数)
 // 例) tokenTransTable[0] = Pbnf("PROGRAM", {"LBRACKET", "COMPOUND", "RBRACKET"})

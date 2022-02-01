@@ -1,12 +1,9 @@
+#pragma once
 #include "include.cpp"
 #include "init.cpp"
 #include "tools.cpp"
 
 
-// LL(1)法の準備
-void createFirstSet(){
-
-}
 bool parsing(vector<string>& input_stream, vector<int>& token_stream){
     // token列を文法の通りに遷移させて、間違っていないかをチェックする。
     int i = 0; 

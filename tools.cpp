@@ -1,3 +1,4 @@
+#pragma once
 #include "include.cpp"
 
 // fileの文字列をそのまま返す
