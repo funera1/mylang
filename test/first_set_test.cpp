@@ -1,5 +1,7 @@
+#pragma once
 #include "../include.cpp"
 #include "../lexical.cpp"
+
 int main() {
 	// 入力記号列を読み込む
 	string str = fileToString("input.txt");
