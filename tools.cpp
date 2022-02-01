@@ -36,28 +36,28 @@ string getNextStr(string baseStr, int& now_cursol){
 
 
 // 単語の一文字目でトークンを決め打ちする
-int firstCheckToken(char c){
-	if(('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z'))return ID;
-	if('0' <= c && c <= '9')return NUMBER;
-	if(c == ';')return SEMICOLON;
-	if(c == ',')return COMMA;
-	if(c == '(')return LPAREN;
-	if(c == ')')return RPAREN;
-	if(c == '[')return LBRACE;
-	if(c == ']')return RBRACE;
-	if(c == '{')return LBRACKET;
-	if(c == '}')return RBRACKET;
-	if(c == '=')return ASSIGN;
-	if(c == ' ')return EOP;
-	if(c == '\n')return EOP;
-	if(c == '\t')return EOP;
-	return NUSED;
+string firstCheckToken(char c){
+	if(('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z'))return "ID";
+	if('0' <= c && c <= '9')return "NUMBER";
+	if(c == ';')return "SEMICOLON";
+	if(c == ',')return "COMMA";
+	if(c == '(')return "LPAREN";
+	if(c == ')')return "RPAREN";
+	if(c == '[')return "LBRACE";
+	if(c == ']')return "RBRACE";
+	if(c == '{')return "LBRACKET";
+	if(c == '}')return "RBRACKET";
+	if(c == '=')return "ASSIGN";
+	if(c == ' ')return "EOP";
+	if(c == '\n')return "EOP";
+	if(c == '\t')return "EOP";
+	return "NUSED";
 }
 
 // IDがtokenでないか確かめる
 int checkIdIsToken(string s){
-	if(s == "int")return INT;
-	else return ID;
+	if(s == "int")return "INT";
+	else return "ID";
 }
 
 // 終端記号かチェック
