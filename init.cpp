@@ -6,7 +6,7 @@
 
 // 文法の遷移を3重vectorに写す
 vector<Pbnf> bnfToList(){
-	ifstream input_bnf = fileToIfstream("bnf");
+	ifstream input_bnf = fileToIfstream(home_dir+"bnf");
 
 	// この関数で返す値
 	vector<Pbnf> local_token_trans_table;
@@ -37,12 +37,13 @@ vector<Pbnf> bnfToList(){
 			else if(separator == ":="){
 				// 右辺は一つのtokenで終端記号
 				string word = getNextStr(now_line, i);
+				dst.push_back(word);
 				// 終端記号列
 				terminal_symbols.insert(word);
 			}
 			// それ以外ならエラー
 			else {
-				cerr << "separatorが:=でも::=でもない" << endl;
+				cout << "separatorが:=でも::=でもない" << endl;
 				assert(0);
 			}
 			// TODO: bnf_src_to_dstとtoken_trans_tableどっちも共通した過程を踏むのにtoken_trans_tableのための関数になっているので調整する
@@ -56,25 +57,25 @@ vector<Pbnf> bnfToList(){
 // 変数の初期化
 void init(){
 	// tokenstr_to_tokenkindの初期化
-	tokenstr_to_tokenkind["TERMINAL"] = TERMINAL;
-	tokenstr_to_tokenkind["EOP"] = EOP;
-	tokenstr_to_tokenkind["ID"] = ID;
-	tokenstr_to_tokenkind["NUMBER"] = NUMBER;
-	tokenstr_to_tokenkind["INT"] = INT;
-	tokenstr_to_tokenkind["SEMICOLON"] = SEMICOLON;
-	tokenstr_to_tokenkind["COMMA"] = COMMA;
-	tokenstr_to_tokenkind["LPAREN"] = LPAREN;
-	tokenstr_to_tokenkind["RPAREN"] = RPAREN;
-	tokenstr_to_tokenkind["LBRACE"] = LBRACE;
-	tokenstr_to_tokenkind["RBRACE"] = RBRACE;
-	tokenstr_to_tokenkind["LBRACKET"] = LBRACKET;
-	tokenstr_to_tokenkind["RBRACKET"] = RBRACKET;
-	tokenstr_to_tokenkind["ASSIGN"] = ASSIGN;
-	tokenstr_to_tokenkind["PROGRAM"] = PROGRAM;
-	tokenstr_to_tokenkind["COMPOUND"] = COMPOUND;
-	tokenstr_to_tokenkind["STATEMENT"] = STATEMENT;
-	tokenstr_to_tokenkind["DECLARATION_STATEMENT"] = DECLARATION_STATEMENT;
-	tokenstr_to_tokenkind["ASSIGN_STATEMENT"] = ASSIGN_STATEMENT;
-	tokenstr_to_tokenkind["NUSED"] = NUSED;
+	// tokenstr_to_tokenkind["TERMINAL"] = TERMINAL;
+	// tokenstr_to_tokenkind["EOP"] = EOP;
+	// tokenstr_to_tokenkind["ID"] = ID;
+	// tokenstr_to_tokenkind["NUMBER"] = NUMBER;
+	// tokenstr_to_tokenkind["INT"] = INT;
+	// tokenstr_to_tokenkind["SEMICOLON"] = SEMICOLON;
+	// tokenstr_to_tokenkind["COMMA"] = COMMA;
+	// tokenstr_to_tokenkind["LPAREN"] = LPAREN;
+	// tokenstr_to_tokenkind["RPAREN"] = RPAREN;
+	// tokenstr_to_tokenkind["LBRACE"] = LBRACE;
+	// tokenstr_to_tokenkind["RBRACE"] = RBRACE;
+	// tokenstr_to_tokenkind["LBRACKET"] = LBRACKET;
+	// tokenstr_to_tokenkind["RBRACKET"] = RBRACKET;
+	// tokenstr_to_tokenkind["ASSIGN"] = ASSIGN;
+	// tokenstr_to_tokenkind["PROGRAM"] = PROGRAM;
+	// tokenstr_to_tokenkind["COMPOUND"] = COMPOUND;
+	// tokenstr_to_tokenkind["STATEMENT"] = STATEMENT;
+	// tokenstr_to_tokenkind["DECLARATION_STATEMENT"] = DECLARATION_STATEMENT;
+	// tokenstr_to_tokenkind["ASSIGN_STATEMENT"] = ASSIGN_STATEMENT;
+	// tokenstr_to_tokenkind["NUSED"] = NUSED;
 	token_trans_table = bnfToList();
 }
