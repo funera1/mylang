@@ -2,8 +2,8 @@
 #include "include.cpp"
 
 // fileの文字列をそのまま返す
-string fileToString(string inputFilePath){
-	ifstream ifs(inputFilePath);
+string fileToString(string input_file_path){
+	ifstream ifs(input_file_path);
 	// 読み込めなかったらエラー
 	if (ifs.fail()) {
 		cerr << "Failed to open file." << endl;
@@ -55,7 +55,7 @@ string firstCheckToken(char c){
 }
 
 // IDがtokenでないか確かめる
-int checkIdIsToken(string s){
+string checkIdIsToken(string s){
 	if(s == "int")return "INT";
 	else return "ID";
 }
@@ -77,12 +77,12 @@ bool all_is_term_in_set(set<string> st){
 }
 
 ifstream fileToIfstream(string file_path){
-	string file_name(file_path);
-	ifstream input_bnf(file_name);
+	string filename(file_path);
+	ifstream input_file(filename);
 	// fileが開かなければエラー
-	if(!input_bnf.is_open()){
-		cerr << "Could not open the bnf file." << endl;
+	if(!input_file.is_open()){
+		cout << "Could not open this file." << endl;
 		assert(0);
 	}
-	return input_bnf;
+	return input_file;
 }
