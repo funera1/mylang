@@ -35,3 +35,14 @@ map<string, set<string>> create_first_set(){
 // 		set<string> follow_set;
 // 	}
 // }
+
+void create_ll_parsing_table(map<string, set<string>> first_set, map<string, set<string>> follow_set){
+	map<pair<string, string>, string> ll_parsing_table;
+	// すべての(non-term, term)の組み合わせについて表を作る
+	// algorithm:
+	// T[A, a]にA->wが入るのは以下の場合のみ
+	// - aがfirst_set(w)に含まれる
+	// - epsがfirst_set(w)に含まれ、aがfollow_set(A)に含まれる
+	
+	// TODO: non-termとtermをそれぞれ持つデータ集合がほしい
+}

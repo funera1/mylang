@@ -1,4 +1,4 @@
-#include "include.hpp"
+#include "include.cpp"
 
 // fileの文字列をそのまま返す
 string fileToString(string inputFilePath){
