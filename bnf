@@ -16,3 +16,8 @@ RBRACKET := }
 SEMICOLON := ;
 INT := int
 ASSIGN := =
+
+// TODO
+ID := #id
+NUMBER := #number
+END := $
