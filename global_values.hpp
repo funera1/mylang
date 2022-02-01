@@ -7,3 +7,6 @@ vector<Pbnf> token_trans_table;
 map<string, int> tokenstr_to_tokenkind;
 // 終端記号の集合
 set<string> terminal_symbols;
+//
+map<string, vector<vector<string>>> bnf_src_to_dst;
+string home_dir = "/home/funera1/workspace/mylang/";
