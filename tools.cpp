@@ -86,3 +86,24 @@ ifstream fileToIfstream(string file_path){
 	}
 	return input_file;
 }
+
+void get_nonterm_and_term_list(){
+	map<string, bool> seen;
+	auto add_list = [&](string s){
+		if(is_term(s)) term_list.push_back(s);
+		else nonterm_list.push_back(s);
+		seen[s] = true;
+	};
+	for(auto [src, dst] : token_trans_table){
+		if(seen[src])continue;
+		add_list(src);
+		for(auto dst_i : dst){
+			if(seen[dst_i])continue;
+			add_list(dst_i);
+		}
+	}
+}
+
+bool is_in_set(set<string> st, string item){
+	return (bool)(st.find(item) != st.end());
+}
