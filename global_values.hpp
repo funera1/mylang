@@ -1,9 +1,9 @@
 #pragma once
 #include "include.cpp"
 // あるtokenから遷移するtoken列のリスト(NUSED+1はtokenkindの個数)
-// 例) tokenTransTable[0] = Pbnf("PROGRAM", {"LBRACKET", "COMPOUND", "RBRACKET"})
-// TODO: token_trans_tableより遷移のリストみたいな名前のほうが良さそう
-vector<Pbnf> token_trans_table;
+// 例) tokenTransTable[0] = P_Src_Dst("PROGRAM", {"LBRACKET", "COMPOUND", "RBRACKET"})
+// TODO: bnf_transition_listより遷移のリストみたいな名前のほうが良さそう
+vector<P_src_dst> bnf_transition_list;
 // トークンの文字列から対応するtokenkindを割り当てる
 map<string, int> tokenstr_to_tokenkind;
 // 終端記号の集合

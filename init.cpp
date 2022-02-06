@@ -5,11 +5,11 @@
 
 
 // 文法の遷移を3重vectorに写す
-vector<Pbnf> bnfToList(){
+vector<P_src_dst> create_bnf_transtion_list(){
 	ifstream input_bnf = fileToIfstream(home_dir+"bnf");
 
 	// この関数で返す値
-	vector<Pbnf> local_token_trans_table;
+	vector<P_src_dst> local_bnf_transition_list;
 	string now_line = "";
 	while(getline(input_bnf, now_line)){
 		// コメントはスルー
@@ -46,12 +46,12 @@ vector<Pbnf> bnfToList(){
 				cout << "separatorが:=でも::=でもない" << endl;
 				assert(0);
 			}
-			// TODO: bnf_src_to_dstとtoken_trans_tableどっちも共通した過程を踏むのにtoken_trans_tableのための関数になっているので調整する
+			// TODO: bnf_src_to_dstとbnf_transition_listどっちも共通した過程を踏むのにbnf_transition_listのための関数になっているので調整する
 			bnf_src_to_dst[src].push_back(dst);
-			local_token_trans_table.push_back(Pbnf(src, dst));
+			local_bnf_transition_list.push_back(P_src_dst(src, dst));
 		}
 	}
-	return local_token_trans_table;
+	return local_bnf_transition_list;
 }
 
 // 変数の初期化
@@ -77,5 +77,6 @@ void init(){
 	// tokenstr_to_tokenkind["DECLARATION_STATEMENT"] = DECLARATION_STATEMENT;
 	// tokenstr_to_tokenkind["ASSIGN_STATEMENT"] = ASSIGN_STATEMENT;
 	// tokenstr_to_tokenkind["NUSED"] = NUSED;
-	token_trans_table = bnfToList();
+	bnf_transition_list = create_bnf_transtion_list();
+	create_nonterm_and_term_list();
 }

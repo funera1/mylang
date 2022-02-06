@@ -87,14 +87,15 @@ ifstream fileToIfstream(string file_path){
 	return input_file;
 }
 
-void get_nonterm_and_term_list(){
+// bnf_transition_listに依存してる
+void create_nonterm_and_term_list(){
 	map<string, bool> seen;
 	auto add_list = [&](string s){
 		if(is_term(s)) term_list.push_back(s);
 		else nonterm_list.push_back(s);
 		seen[s] = true;
 	};
-	for(auto [src, dst] : token_trans_table){
+	for(auto [src, dst] : bnf_transition_list){
 		if(seen[src])continue;
 		add_list(src);
 		for(auto dst_i : dst){
