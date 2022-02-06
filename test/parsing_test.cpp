@@ -17,8 +17,15 @@ int main(){
     token_stream = x.second;
     Parsing p(bnf_transition_list, nonterm_list);
     token_stream.push_back("$");
-    bool f = p.parsing(token_stream);
-    // cout << (f ? "Y" : "N") << endl;
+    // DEBUG: first_set
+    // for(auto [non_term, first_set] : p.first_sets){
+    //     cout << non_term << ":" << endl;
+    //     cout << '{';
+    //     for(auto t : first_set){
+    //         cout << t << ", ";
+    //     }
+    //     cout << '}' << endl;
+    // }
     // DEBUG: follow_setが成功してるかどうか
     // for(auto [non_term, follow_set] : p.follow_sets){
     //     cout << non_term << ":" << endl;
@@ -28,11 +35,15 @@ int main(){
     //     }
     //     cout << '}' << endl;
     // }
+    // DEBUG: parsing tableが成功してるかどうか
     // auto t = p.create_ll_parsing_table();
     // for(auto ti : t){
     //     auto [non_term, term] = ti.first;
     //     int num = ti.second;
+    //     if(num == -1)continue;
     //     cout << non_term << " " << term << " " << num << endl;
     // }
     
+    // cout << endl << endl;
+    // bool f = p.parsing(token_stream);
 }
