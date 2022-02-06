@@ -1,8 +1,9 @@
 #pragma once
 #include <bits/stdc++.h>
 #define sz(x) (x).size()
+#define ALL(x) (x).begin(),(x).end()
 using namespace std;
-using Pbnf = pair<string, vector<string>>;
+using P_src_dst = pair<string, vector<string>>;
 
 // 定数
 // static int TOKEN_TRANS_TABLE_MAX_SIZE = 100;
