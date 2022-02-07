@@ -96,15 +96,34 @@ void create_nonterm_and_term_list(){
 		seen[s] = true;
 	};
 	for(auto [src, dst] : bnf_transition_list){
-		if(seen[src])continue;
-		add_list(src);
+		if(!seen[src])add_list(src);
 		for(auto dst_i : dst){
-			if(seen[dst_i])continue;
-			add_list(dst_i);
+			if(!seen[dst_i])add_list(dst_i);
 		}
 	}
 }
 
 bool is_in_set(set<string> st, string item){
 	return (bool)(st.find(item) != st.end());
+}
+
+
+void all_watch_in_stack(stack<string> st){
+	cout << '[';
+	while(sz(st)){
+		cout << st.top();
+		if(sz(st) > 1)cout << ',';
+		cout << " ";
+		st.pop();
+	}
+	cout << ']' << endl;
+}
+
+
+void all_watch_in_set(set<string> st){
+	cout << '{';
+	for(string si : st){
+		cout << si << ", ";
+	}
+	cout << '}' << endl;
 }

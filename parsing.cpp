@@ -18,14 +18,20 @@ class Parsing {
 			for(auto [src, dst] : bnf_transition_list){
 				// 既に見てたら飛ばす
 				if(!first_sets[src].empty())continue;
+				// cout << src << ":" << endl;
 				set<string> first_set;
 				// 最初は自分自身の非終端記号を持ってスタート
 				first_set.insert(src);
 				while(!all_is_term_in_set(first_set)){
 					set<string> first_set_tmp;
-					for(auto si : first_set){
-						for(auto dst_i : bnf_src_to_dst[si]){
-							first_set_tmp.insert(dst_i[0]);
+					for(auto first_set_i : first_set){
+						// first_set_iが終端記号ならそのまま継続 
+						if(is_term(first_set_i))first_set_tmp.insert(first_set_i);
+						// そうでないなら、遷移させたものを入れる
+						else {
+							for(auto dst_i : bnf_src_to_dst[first_set_i]){
+								first_set_tmp.insert(dst_i[0]);
+							}
 						}
 					}
 					first_set = first_set_tmp;
@@ -48,57 +54,66 @@ class Parsing {
 			while(sz(nonterm_que)){
 				auto non_term = nonterm_que.front();
 				nonterm_que.pop();
+				bool complete = true;
 				// すでに見たかどうかを覚えておく
 				seen[non_term] = true;
 
+				auto add_follow_set_to_follow_set = [&](set<string> follow_set, string src){
+					// follow_set(src)がある時
+					if(seen[src]){
+						follow_set.insert(ALL(follow_sets[src]));
+						return true;
+					}
+					// follow_set(src)がない時
+					nonterm_que.push(non_term);
+					complete = false;
+					return false;
+				};
 				set<string> follow_set;
-				// 初期化
-				follow_set.insert(non_term);
-				while(!all_is_term_in_set(follow_set)){
-					// TODO: follow_set_tmpいる？
-					set<string> follow_set_tmp;
+				{
 					for(auto [src, dst] : bnf_transition_list){
 						for(int i = 0; i < sz(dst); i++){
 							// 関係ないときはスルー
 							if(non_term != dst[i])continue;
-
 							// 次の要素がないとき
 							if(i + 1 >= sz(dst)){
-								// follow_set(src)がある時
-								if(seen[src]){
-									follow_set_tmp.insert(ALL(follow_sets[src]));
-									break;
-								}
-								// follow_set(src)がない時
-								nonterm_que.push(non_term);
+								add_follow_set_to_follow_set(follow_set, src);
 								break;
 							}
 							// 次の要素があるとき
 							string follow_str = dst[i + 1];
 							// follow_strが終端記号のとき
 							if(is_term(follow_str)){
-								follow_set_tmp.insert(follow_str);
-								break;
+								follow_set.insert(follow_str);
 							}
 							// follow_strが非終端記号のとき
 							else {
-								// 空文字が含まれてるとき
-								if(is_in_set(first_sets[follow_str], "#eps")){
-									follow_set_tmp.insert(src);
+								// first_set(follow_str)を追加
+								// follow_set.insert(ALL(first_sets[follow_str]));
+								bool exist_eps = false;
+								for(auto first_set_i : first_sets[follow_str]){
+									if(first_set_i == "#eps"){
+										exist_eps = true;
+										continue;
+									}
+									follow_set.insert(first_set_i);
 								}
-								else {
-									// first_set(follow_str)を追加
-									follow_set_tmp.insert(ALL(first_sets[follow_str]));
-									// for(auto fs : first_sets[follow_str]){
-									// 	follow_set_tmp.insert(fs);
-									// }
+								// 空文字が含まれてるとき
+								if(exist_eps){
+									add_follow_set_to_follow_set(follow_set, src);
+									break;
 								}
 							}
 						}
 					}
-					follow_set = follow_set_tmp;
 				}
-				follow_sets[non_term] = follow_set;
+				seen[non_term] = complete;
+				if(complete){
+					follow_sets[non_term] = follow_set;
+					// DEBUG: follow_setの中身
+					// cout << non_term << ": ";
+					// all_watch_in_set(follow_set);
+				}
 			}
 		}
 		Parsing(vector<P_src_dst> arg_bnf_transition_list, vector<string> arg_nonterm_list){
@@ -146,19 +161,22 @@ class Parsing {
 				// 	cout << si << " ";
 				// }
 				// cout << endl;
-
+				bool eps_exist = false;
+				for(auto first_i : first_set){
+					if(first_i == "#eps"){
+						eps_exist = true;
+						continue;
+					}
+					ll_parsing_table[P_nonterm_term(src, first_i)] = i;
+				}
 				// 空文字がfirst_set(w)に含まれる場合
-				if(is_in_set(first_set, "#eps")){
-					auto follow_set = get_follow_set(dst[0]);
+				if(eps_exist){
+					// A -> wにおいてepsがFi(w)に含まれ、aがFo(A)に含まれる
+					auto follow_set = get_follow_set(src);
 					for(auto follow_i : follow_set){
 						ll_parsing_table[P_nonterm_term(src, follow_i)] = i;
 					}
-				}
-				// 空文字がfirst_set(w)に含まれない場合
-				else {
-					for(auto first_i : first_set){
-						ll_parsing_table[P_nonterm_term(src, first_i)] = i;
-					}
+					// assert(0);
 				}
 			}
 			return ll_parsing_table;
@@ -167,6 +185,7 @@ class Parsing {
 			auto parsing_table = create_ll_parsing_table();
 			stack<string> parsing_stack;
 			// 初期値
+			parsing_stack.push("$");
 			parsing_stack.push("PROGRAM");
 
 			int token_stream_cursor = 0;
@@ -175,6 +194,7 @@ class Parsing {
 				string parsing_stack_top = parsing_stack.top();
 				// DEBUG:
 				cout << token_i << " " << parsing_stack_top << endl;
+				all_watch_in_stack(parsing_stack);
 				// stackのtopが$の場合
 				if(parsing_stack_top == "$"){
 					// 入力バッファとスタックどちらも$のとき
@@ -190,6 +210,11 @@ class Parsing {
 						return false;
 					}
 				}
+				// stackのtopが#epsの場合
+				else if(parsing_stack_top == "EPS" || parsing_stack_top == "#eps"){
+					// 入力を進めずにstackだけ抜く
+					parsing_stack.pop();
+				}
 				// stackのtopが終端記号の場合
 				else if(is_term(parsing_stack_top)){
 					if(token_i == parsing_stack_top){
@@ -204,7 +229,13 @@ class Parsing {
 				// stackのtopが非終端記号の場合
 				else {
 					int transition_num = parsing_table[P_nonterm_term(parsing_stack_top, token_i)];
-					if(transition_num == -1){
+					// if(parsing_stack_top == "EPS"){
+					// 	cout << "########################" << endl;
+					// 	cout << transition_num << endl;
+					// 	cout << "########################" << endl;
+					// 	return false;
+					// }
+					if(transition_num < 0){
 						cout << "構文エラーです" << endl;
 						return false;
 					}

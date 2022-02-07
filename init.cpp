@@ -38,8 +38,6 @@ vector<P_src_dst> create_bnf_transtion_list(){
 				// 右辺は一つのtokenで終端記号
 				string word = getNextStr(now_line, i);
 				dst.push_back(word);
-				// 終端記号列
-				terminal_symbols.insert(word);
 			}
 			// それ以外ならエラー
 			else {
@@ -56,27 +54,6 @@ vector<P_src_dst> create_bnf_transtion_list(){
 
 // 変数の初期化
 void init(){
-	// tokenstr_to_tokenkindの初期化
-	// tokenstr_to_tokenkind["TERMINAL"] = TERMINAL;
-	// tokenstr_to_tokenkind["EOP"] = EOP;
-	// tokenstr_to_tokenkind["ID"] = ID;
-	// tokenstr_to_tokenkind["NUMBER"] = NUMBER;
-	// tokenstr_to_tokenkind["INT"] = INT;
-	// tokenstr_to_tokenkind["SEMICOLON"] = SEMICOLON;
-	// tokenstr_to_tokenkind["COMMA"] = COMMA;
-	// tokenstr_to_tokenkind["LPAREN"] = LPAREN;
-	// tokenstr_to_tokenkind["RPAREN"] = RPAREN;
-	// tokenstr_to_tokenkind["LBRACE"] = LBRACE;
-	// tokenstr_to_tokenkind["RBRACE"] = RBRACE;
-	// tokenstr_to_tokenkind["LBRACKET"] = LBRACKET;
-	// tokenstr_to_tokenkind["RBRACKET"] = RBRACKET;
-	// tokenstr_to_tokenkind["ASSIGN"] = ASSIGN;
-	// tokenstr_to_tokenkind["PROGRAM"] = PROGRAM;
-	// tokenstr_to_tokenkind["COMPOUND"] = COMPOUND;
-	// tokenstr_to_tokenkind["STATEMENT"] = STATEMENT;
-	// tokenstr_to_tokenkind["DECLARATION_STATEMENT"] = DECLARATION_STATEMENT;
-	// tokenstr_to_tokenkind["ASSIGN_STATEMENT"] = ASSIGN_STATEMENT;
-	// tokenstr_to_tokenkind["NUSED"] = NUSED;
 	bnf_transition_list = create_bnf_transtion_list();
 	create_nonterm_and_term_list();
 }

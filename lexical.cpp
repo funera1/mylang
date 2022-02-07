@@ -40,7 +40,9 @@ pair<vector<string>, vector<string>> lexicalAnalysis(string str){
 		}
 		if(now_token == "ID")now_token = checkIdIsToken(now_word);
 		input_stream.push_back(now_word);
-		token_stream.push_back(now_token);
+		if(now_token == "ID")token_stream.push_back("#id");
+		else if(now_token == "NUM")token_stream.push_back("#num");
+		else token_stream.push_back(now_word);
 		i++;
 	}
 	return make_pair(input_stream, token_stream);

@@ -18,23 +18,26 @@ int main(){
     Parsing p(bnf_transition_list, nonterm_list);
     token_stream.push_back("$");
     // DEBUG: first_set
-    // for(auto [non_term, first_set] : p.first_sets){
-    //     cout << non_term << ":" << endl;
-    //     cout << '{';
-    //     for(auto t : first_set){
-    //         cout << t << ", ";
-    //     }
-    //     cout << '}' << endl;
-    // }
+    cout << "###CHECK FIRST SET###" << endl;
+    for(auto [non_term, first_set] : p.first_sets){
+        cout << non_term << ":" << endl;
+        cout << '{';
+        for(auto t : first_set){
+            cout << t << ", ";
+        }
+        cout << '}' << endl;
+    }
     // DEBUG: follow_setが成功してるかどうか
-    // for(auto [non_term, follow_set] : p.follow_sets){
-    //     cout << non_term << ":" << endl;
-    //     cout << '{';
-    //     for(auto t : follow_set){
-    //         cout << t << ", ";
-    //     }
-    //     cout << '}' << endl;
-    // }
+    cout << endl << "###CHECK FOLLOW SET###" << endl;
+    for(auto [non_term, follow_set] : p.follow_sets){
+        cout << non_term << ":" << endl;
+        cout << '{';
+        for(auto t : follow_set){
+            cout << t << ", ";
+        }
+        cout << '}' << endl;
+    }
+    cout << endl;
     // DEBUG: parsing tableが成功してるかどうか
     // auto t = p.create_ll_parsing_table();
     // for(auto ti : t){
@@ -45,5 +48,5 @@ int main(){
     // }
     
     // cout << endl << endl;
-    // bool f = p.parsing(token_stream);
+    bool f = p.parsing(token_stream);
 }
