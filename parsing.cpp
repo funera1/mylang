@@ -9,6 +9,7 @@ class Parsing {
 	public:
 		map<string, set<string>> first_sets;
 		map<string, set<string>> follow_sets;
+		map<P_nonterm_term, int> ll_parsing_table;
 		vector<P_src_dst> bnf_transition_list;
 		vector<string> nonterm_list;
 
@@ -122,6 +123,7 @@ class Parsing {
 
 			create_first_set();
 			create_follow_set();
+			ll_parsing_table = create_ll_parsing_table();
 		}
 		set<string> get_first_set(string s){
 			if(is_term(s)){
@@ -139,12 +141,14 @@ class Parsing {
 		map<P_nonterm_term, int> create_ll_parsing_table(){
 			// P_nonterm_term(non_term, term)
 			map<P_nonterm_term, int> ll_parsing_table;
-			// 初期化
-			for(auto nonterm : nonterm_list){
-				for(auto term : term_list){
-					ll_parsing_table[P_nonterm_term(nonterm, term)] = -1;
-				}
-			}
+
+			// -1で初期化
+			// これありえないトークンの組み合わせが来たときに0番の処理してしまう
+			// for(auto nonterm : nonterm_list){
+			// 	for(auto term : term_list){
+			// 		ll_parsing_table[P_nonterm_term(nonterm, term)] = -1;
+			// 	}
+			// }
 
 
 			// すべての(non-term, term)の組み合わせについて表を作る
@@ -181,8 +185,18 @@ class Parsing {
 			}
 			return ll_parsing_table;
 		}
+		
+		int get_ll_parsing_table(string non_term, string term){
+			// (non_term, term)について構文解析表が定義されていない場合エラーを出す
+			if(ll_parsing_table.find(P_nonterm_term(non_term, term)) == ll_parsing_table.end()){
+				cout << "<" << non_term << ">と<" << term << ">は";
+				cout << "構文解析表にありえないトークンの組み合わせです" << endl;
+				assert(0);
+				return -1;
+			}
+			return ll_parsing_table[P_nonterm_term(non_term, term)];
+		}
 		bool parsing(vector<string> token_stream){
-			auto parsing_table = create_ll_parsing_table();
 			stack<string> parsing_stack;
 			// 初期値
 			parsing_stack.push("$");
@@ -228,7 +242,7 @@ class Parsing {
 				}
 				// stackのtopが非終端記号の場合
 				else {
-					int transition_num = parsing_table[P_nonterm_term(parsing_stack_top, token_i)];
+					int transition_num = get_ll_parsing_table(parsing_stack_top, token_i);
 					// if(parsing_stack_top == "EPS"){
 					// 	cout << "########################" << endl;
 					// 	cout << transition_num << endl;
