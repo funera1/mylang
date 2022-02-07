@@ -40,10 +40,13 @@ pair<vector<string>, vector<string>> lexicalAnalysis(string str){
 		}
 		if(now_token == "ID")now_token = checkIdIsToken(now_word);
 		input_stream.push_back(now_word);
+
 		if(now_token == "ID")token_stream.push_back("#id");
-		else if(now_token == "NUM")token_stream.push_back("#num");
+		else if(now_token == "NUMBER")token_stream.push_back("#number");
 		else token_stream.push_back(now_word);
 		i++;
 	}
+	input_stream.push_back("$");
+	token_stream.push_back("$");
 	return make_pair(input_stream, token_stream);
 }
