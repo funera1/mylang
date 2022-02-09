@@ -30,6 +30,15 @@ void add_child(node_t* parent_node, string token, int number=0, string id=""){
     parent_node->child_nodes.push_back(child_node);
 }
 
+void release_node(node_t* node){
+    if(sz(node->child_nodes) > 0){
+        cout << "child_node is not released" << endl;
+        assert(0);
+    }
+    node = free();
+    // ダブルフリーを防ぐ
+    node = NULL;
+}
 
 int main(){
     // テスト
