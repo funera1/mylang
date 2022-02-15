@@ -4,14 +4,13 @@
 #include "tools.cpp"
 
 
+// bnf_transition_listとnonterm_listが必要
 class Parsing {
 	// private:
 	public:
 		map<string, set<string>> first_sets;
 		map<string, set<string>> follow_sets;
 		map<P_nonterm_term, int> ll_parsing_table;
-		vector<P_src_dst> bnf_transition_list;
-		vector<string> nonterm_list;
 
 		void create_first_set(){
 			// とりあえず一つの非終端記号についてだけやる->全ての非終端記号についてやる
@@ -117,10 +116,7 @@ class Parsing {
 				}
 			}
 		}
-		Parsing(vector<P_src_dst> arg_bnf_transition_list, vector<string> arg_nonterm_list){
-			bnf_transition_list = arg_bnf_transition_list;
-			nonterm_list = arg_nonterm_list;
-
+		Parsing(){
 			create_first_set();
 			create_follow_set();
 			ll_parsing_table = create_ll_parsing_table();
@@ -207,8 +203,9 @@ class Parsing {
 				auto token_i = token_stream[token_stream_cursor];
 				string parsing_stack_top = parsing_stack.top();
 				// DEBUG:
-				cout << token_i << " " << parsing_stack_top << endl;
-				all_watch_in_stack(parsing_stack);
+				// cout << token_i << " " << parsing_stack_top << endl;
+				// DEBUG
+				// all_watch_in_stack(parsing_stack);
 				// stackのtopが$の場合
 				if(parsing_stack_top == "$"){
 					// 入力バッファとスタックどちらも$のとき
@@ -243,12 +240,6 @@ class Parsing {
 				// stackのtopが非終端記号の場合
 				else {
 					int transition_num = get_ll_parsing_table(parsing_stack_top, token_i);
-					// if(parsing_stack_top == "EPS"){
-					// 	cout << "########################" << endl;
-					// 	cout << transition_num << endl;
-					// 	cout << "########################" << endl;
-					// 	return false;
-					// }
 					if(transition_num < 0){
 						cout << "構文エラーです" << endl;
 						return false;
