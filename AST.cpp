@@ -180,18 +180,24 @@ node_t* create_RST(vector<string> token_stream, vector<string> input_stream){
     return root;
 }
 
+// RSTをASTに変換する
+void RST_to_AST(node_t* root){
+    
+}
 
 // RSTを全部表示するプログラム
 // 親->兄弟->子の順で見せていく
-void watch_all_RST(node_t* root){
-    node_t* now_node = root;
-    while(now_node != NULL){
-        node_t* brother_top_node = now_node;
-        // 兄弟をすべて出力
-        while(now_node->right_node != NULL){
-            now_node = now_node->right_node;
-            cout << now_node->token << " ";
-        }
-        now_node = brother_top_node->child_node;
-    }
-}
+// void watch_all_RST(node_t* root){
+//     node_t* now_node = root;
+//     while(now_node != NULL){
+//         node_t* brother_top_node = now_node;
+//         // 兄弟をすべて出力
+//         cout << now_node->token << " ";
+//         while(now_node->right_node != NULL){
+//             now_node = now_node->right_node;
+//             cout << now_node->token << " ";
+//         }
+//         cout << endl;
+//         now_node = brother_top_node->child_node;
+//     }
+// }

@@ -4,10 +4,12 @@
 #include "../lexical.cpp"
 #include "../parsing.cpp"
 #include "../init.cpp"
+#include "../AST.cpp"
 
 int main(){
 	string str = fileToString("input.txt");
     init();
+    // cout << sz(bnf_transition_list) << endl;
 	// 字句解析
 	vector<string> input_stream;
 	vector<string> token_stream;
@@ -15,9 +17,10 @@ int main(){
 
     input_stream = x.first;
     token_stream = x.second;
-    for(int i = 0; i < sz(token_stream); i++)cout << token_stream[i] << endl;
+    // for(int i = 0; i < sz(token_stream); i++)cout << token_stream[i] << endl;
     // assert(0);
-    Parsing p(bnf_transition_list, nonterm_list);
+    Parsing p;
+
     // DEBUG: first_set
     // cout << "###CHECK FIRST SET###" << endl;
     // for(auto [non_term, first_set] : p.first_sets){
@@ -50,5 +53,8 @@ int main(){
     // }
     
     // cout << endl << endl;
-    bool f = p.parsing(token_stream);
+    node_t* node = init_node("TOKEN");
+    // p.parsing(token_stream);
+    node_t* root = create_RST(token_stream, input_stream);
+    watch_all_RST(root);
 }
