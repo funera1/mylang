@@ -127,3 +127,13 @@ void all_watch_in_set(set<string> st){
 	}
 	cout << '}' << endl;
 }
+
+
+int to_num(string s){
+	int ret = 0;
+	for(char si : s){
+		assert('0' <= si && si <= '9');
+		ret = 10 * ret + (int)(si - '0');
+	}
+	return ret;
+}
