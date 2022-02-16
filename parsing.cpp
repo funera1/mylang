@@ -146,23 +146,28 @@ class Parsing {
 			// - epsがfirst_set(w)に含まれ、aがfollow_set(A)に含まれる
 			for(int i = 0; i < sz(bnf_transition_list); i++){
 				auto [src, dst] = bnf_transition_list[i];
-				for(auto dst_i : dst){
-					auto first_set = get_first_set(dst_i);
-					// first_setの任意の要素fiについてT[src, fi] = iとする
-					for(auto fi : first_set){
-						ll_parsing_table[P_nonterm_term(src, fi)] = i;
+				auto first_set = get_first_set(dst[0]);
+				// DEBUG: first_setの中身
+				// cout << src + "'s first_set:" << endl;
+				// for(auto si : first_set){
+				// 	cout << si << " ";
+				// }
+				// cout << endl;
+				bool eps_exist = false;
+				for(auto first_i : first_set){
+					if(first_i == "#eps"){
+						eps_exist = true;
 					}
-					// first_setにepsがある場合、follow_sets(src)の要素foについてT[src, fo] = i
-					if(is_in_set(first_set, "#eps")){
-						auto follow_set = get_follow_set(src);
-						cout << "IS_IN_SET: ";
-						cout << src << " " << dst_i << endl;
-						for(auto fo : follow_set){
-							if(src == "TERM" && dst_i == "TERM_")cout << fo << ", ";
-							cout << endl;
-							ll_parsing_table[P_nonterm_term(src, fo)] = i;
-						}
+					ll_parsing_table[P_nonterm_term(src, first_i)] = i;
+				}
+				// 空文字がfirst_set(w)に含まれる場合
+				if(eps_exist){
+					// A -> wにおいてepsがFi(w)に含まれ、aがFo(A)に含まれる
+					auto follow_set = get_follow_set(src);
+					for(auto follow_i : follow_set){
+						ll_parsing_table[P_nonterm_term(src, follow_i)] = i;
 					}
+					// assert(0);
 				}
 			}
 			return ll_parsing_table;
@@ -171,6 +176,10 @@ class Parsing {
 		int get_ll_parsing_table(string non_term, string term){
 			// (non_term, term)について構文解析表が定義されていない場合エラーを出す
 			if(ll_parsing_table.find(P_nonterm_term(non_term, term)) == ll_parsing_table.end()){
+				// (non_term, "#eps")がある場合はそれを返す
+				if(ll_parsing_table.find(P_nonterm_term(non_term, "#eps")) != ll_parsing_table.end()){
+					return ll_parsing_table[P_nonterm_term(non_term, "#eps")];
+				}
 				cout << "<" << non_term << ">と<" << term << ">は";
 				cout << "構文解析表にありえないトークンの組み合わせです" << endl;
 				assert(0);
