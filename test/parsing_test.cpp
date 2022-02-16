@@ -48,18 +48,18 @@ int main(){
     // }
     // cout << endl;
     // DEBUG: parsing tableが成功してるかどうか
-    auto t = p.create_ll_parsing_table();
-    for(auto ti : t){
-        auto [non_term, term] = ti.first;
-        int num = ti.second;
-        if(num == -1)continue;
-        cout << non_term << " " << term << " " << num << endl;
-    }
-    cout << endl << endl;
+    // auto t = p.create_ll_parsing_table();
+    // for(auto ti : t){
+    //     auto [non_term, term] = ti.first;
+    //     int num = ti.second;
+    //     if(num == -1)continue;
+    //     cout << non_term << " " << term << " " << num << endl;
+    // }
+    // cout << endl << endl;
 
     // DEBUG: 構文解析のテスト
     p.parsing(token_stream);
     // DEBUG: RSTのテスト
     // node_t* node = init_node("TOKEN");
-    // node_t* root = create_RST(token_stream, input_stream);
+    node_t* root = create_RST(token_stream, input_stream);
 }
