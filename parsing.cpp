@@ -135,6 +135,7 @@ class Parsing {
 			}
 			else return follow_sets[s];
 		}
+		// TODO: A -> abcについてfirst_set(a)にepsが含まれるときにバグるはずなので直す
 		map<P_nonterm_term, int> create_ll_parsing_table(){
 			// P_nonterm_term(non_term, term)
 			map<P_nonterm_term, int> ll_parsing_table;
