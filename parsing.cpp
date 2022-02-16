@@ -188,6 +188,7 @@ class Parsing {
 			}
 			return ll_parsing_table[P_nonterm_term(non_term, term)];
 		}
+
 		bool parsing(vector<string> token_stream){
 			stack<string> parsing_stack;
 			// 初期値
@@ -199,9 +200,9 @@ class Parsing {
 				auto token_i = token_stream[token_stream_cursor];
 				string parsing_stack_top = parsing_stack.top();
 				// DEBUG:
-				cout << token_i << " " << parsing_stack_top << endl;
+				// cout << token_i << " " << parsing_stack_top << endl;
 				// DEBUG
-				all_watch_in_stack(parsing_stack);
+				// all_watch_in_stack(parsing_stack);
 				// stackのtopが$の場合
 				if(parsing_stack_top == "$"){
 					// 入力バッファとスタックどちらも$のとき
@@ -218,7 +219,7 @@ class Parsing {
 					}
 				}
 				// stackのtopが#epsの場合
-				else if(parsing_stack_top == "EPS" || parsing_stack_top == "#eps"){
+				else if(parsing_stack_top == "#eps"){
 					// 入力を進めずにstackだけ抜く
 					parsing_stack.pop();
 				}
