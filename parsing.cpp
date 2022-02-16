@@ -18,10 +18,10 @@ class Parsing {
 			for(auto [src, dst] : bnf_transition_list){
 				// 既に見てたら飛ばす
 				if(!first_sets[src].empty())continue;
-				// cout << src << ":" << endl;
 				set<string> first_set;
-				// 最初は自分自身の非終端記号を持ってスタート
 				first_set.insert(src);
+				// 最初は自分自身の非終端記号を持ってスタート
+				// MEMO: 無限ループしてそう
 				while(!all_is_term_in_set(first_set)){
 					set<string> first_set_tmp;
 					for(auto first_set_i : first_set){
@@ -58,6 +58,7 @@ class Parsing {
 				// すでに見たかどうかを覚えておく
 				seen[non_term] = true;
 
+				// follow_setにsrcをキーとするfollow_setを追加する
 				auto add_follow_set_to_follow_set = [&](set<string> follow_set, string src){
 					// follow_set(src)がある時
 					if(seen[src]){
@@ -138,15 +139,6 @@ class Parsing {
 			// P_nonterm_term(non_term, term)
 			map<P_nonterm_term, int> ll_parsing_table;
 
-			// -1で初期化
-			// これありえないトークンの組み合わせが来たときに0番の処理してしまう
-			// for(auto nonterm : nonterm_list){
-			// 	for(auto term : term_list){
-			// 		ll_parsing_table[P_nonterm_term(nonterm, term)] = -1;
-			// 	}
-			// }
-
-
 			// すべての(non-term, term)の組み合わせについて表を作る
 			// algorithm:
 			// T[A, a]にA->wが入るのは以下の場合のみ
@@ -154,29 +146,23 @@ class Parsing {
 			// - epsがfirst_set(w)に含まれ、aがfollow_set(A)に含まれる
 			for(int i = 0; i < sz(bnf_transition_list); i++){
 				auto [src, dst] = bnf_transition_list[i];
-				auto first_set = get_first_set(dst[0]);
-				// DEBUG: first_setの中身
-				// cout << src + "'s first_set:" << endl;
-				// for(auto si : first_set){
-				// 	cout << si << " ";
-				// }
-				// cout << endl;
-				bool eps_exist = false;
-				for(auto first_i : first_set){
-					if(first_i == "#eps"){
-						eps_exist = true;
-						continue;
+				for(auto dst_i : dst){
+					auto first_set = get_first_set(dst_i);
+					// first_setの任意の要素fiについてT[src, fi] = iとする
+					for(auto fi : first_set){
+						ll_parsing_table[P_nonterm_term(src, fi)] = i;
 					}
-					ll_parsing_table[P_nonterm_term(src, first_i)] = i;
-				}
-				// 空文字がfirst_set(w)に含まれる場合
-				if(eps_exist){
-					// A -> wにおいてepsがFi(w)に含まれ、aがFo(A)に含まれる
-					auto follow_set = get_follow_set(src);
-					for(auto follow_i : follow_set){
-						ll_parsing_table[P_nonterm_term(src, follow_i)] = i;
+					// first_setにepsがある場合、follow_sets(src)の要素foについてT[src, fo] = i
+					if(is_in_set(first_set, "#eps")){
+						auto follow_set = get_follow_set(src);
+						cout << "IS_IN_SET: ";
+						cout << src << " " << dst_i << endl;
+						for(auto fo : follow_set){
+							if(src == "TERM" && dst_i == "TERM_")cout << fo << ", ";
+							cout << endl;
+							ll_parsing_table[P_nonterm_term(src, fo)] = i;
+						}
 					}
-					// assert(0);
 				}
 			}
 			return ll_parsing_table;
@@ -203,9 +189,9 @@ class Parsing {
 				auto token_i = token_stream[token_stream_cursor];
 				string parsing_stack_top = parsing_stack.top();
 				// DEBUG:
-				// cout << token_i << " " << parsing_stack_top << endl;
+				cout << token_i << " " << parsing_stack_top << endl;
 				// DEBUG
-				// all_watch_in_stack(parsing_stack);
+				all_watch_in_stack(parsing_stack);
 				// stackのtopが$の場合
 				if(parsing_stack_top == "$"){
 					// 入力バッファとスタックどちらも$のとき

@@ -106,7 +106,8 @@
     "python.defaultInterpreterPath": "/home/funera1/anaconda3/envs/my_env/bin/python",
     "C_Cpp.errorSquiggles": "Disabled",
     "files.associations": {
-        "ostream": "cpp"
+        "ostream": "cpp",
+        "iostream": "cpp"
     },
  
 }

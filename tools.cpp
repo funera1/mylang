@@ -48,6 +48,10 @@ string firstCheckToken(char c){
 	if(c == '{')return "LBRACKET";
 	if(c == '}')return "RBRACKET";
 	if(c == '=')return "ASSIGN";
+	if(c == '+')return "PLUS";
+	if(c == '-')return "MINUS";
+	if(c == '*')return "MULTI";
+	if(c == '/')return "DIVISION";
 	if(c == ' ')return "EOP";
 	if(c == '\n')return "EOP";
 	if(c == '\t')return "EOP";
@@ -63,7 +67,7 @@ string checkIdIsToken(string s){
 // 終端記号かチェック
 bool is_term(string s){
 	if(sz(s) == 0)return false;
-	// 非終端記号は全て大文字、終端記号は全て小文字である
+	// 非終端記号は先頭が必ず大文字、終端記号は全て小文字である
 	if('A' <= s[0] && s[0] <= 'Z')return false;
 	else return true;
 }
