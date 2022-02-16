@@ -68,6 +68,9 @@ void release_node(node_t* node){
 
 // TODO: どの子からでも親に移動する関数. 返り値は親のノード
 node_t* get_parent_node(node_t* node){
+    cout << "IN GET_PARENT_NODE: " << node->token << endl;
+    // 一番上まで来たら終了
+    if(node->token == "PROGRAM")return node;
     // 左のノードがないとき
     if(node->left_node == NULL){
         return node->parent_node;
@@ -80,12 +83,14 @@ node_t* get_parent_node(node_t* node){
 // TODO: 次の頂点の移動先に移動する関数（子->弟->親の順）. 返り値は移動先のノード
 node_t* get_next_node(node_t* node){
     // それぞれポインタ先の実値を指している
-    // if(*(node->child_node) != NULL)return node->child_node;
     if(node->child_node != NULL)return node->child_node;
     if(node->right_node != NULL)return node->right_node;
 
 
     node_t* parent_node = get_parent_node(node);
+    if(parent_node->token != "PROGRAM"){
+        return parent_node;
+    }
     while(parent_node != NULL && parent_node->right_node == NULL)parent_node = get_parent_node(parent_node);
     return parent_node->right_node;
 }
@@ -118,7 +123,7 @@ node_t* create_RST(vector<string> token_stream, vector<string> input_stream){
             if(token_i == parsing_stack_top){
                 parsing_stack.pop();
                 token_stream_cursor++;
-                cout << "OK:構文解析終了" << endl;
+                cout << "OK:RST作成終了" << endl;
                 return root;
             }
             // それ以外のとき
@@ -128,7 +133,7 @@ node_t* create_RST(vector<string> token_stream, vector<string> input_stream){
             }
         }
         // stackのtopが#epsの場合
-        else if(parsing_stack_top == "EPS" || parsing_stack_top == "#eps"){
+        else if(parsing_stack_top == "#eps"){
             // 入力を進めずにstackだけ抜く
             parsing_stack.pop();
         }
@@ -160,10 +165,10 @@ node_t* create_RST(vector<string> token_stream, vector<string> input_stream){
             // また、EPSのときもスルー
             if(size(dst) > 0 && (!is_term(dst[0]) || dst[0] == "EPS")){
                 // DEBUG
-                cout << now_node->token << ", ";
-                cout << src << " -> ";
-                for(auto di : dst)cout << di << ", ";
-                cout << endl;
+                // cout << now_node->token << ", ";
+                // cout << src << " -> ";
+                // for(auto di : dst)cout << di << ", ";
+                // cout << endl;
                 // 子供ノードをつなげる
                 node_t* child_node_top = connect_brothers(dst);
                 connect_parent_and_child(now_node, child_node_top);
@@ -174,8 +179,13 @@ node_t* create_RST(vector<string> token_stream, vector<string> input_stream){
             for(int dst_cur = sz(dst) - 1; dst_cur >= 0; dst_cur--){
                 parsing_stack.push(dst[dst_cur]);
             }
+            cout << token_i << " " << parsing_stack_top << endl;
             now_node = get_next_node(now_node);
+            cout << "END" << endl;
         }
+        // DEBUG
+        // cout << token_stream[token_stream_cursor] << endl;
+        // all_watch_in_stack(parsing_stack);
     }
     return root;
 }
