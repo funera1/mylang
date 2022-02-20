@@ -80,6 +80,22 @@ node_t* get_parent_node(node_t* node){
     }
 }
 
+// nodeをヌルポチェックして返す関数
+node_t* check_nullptr_node_t(node_t* node){
+    if(node == nullptr){
+        cout << "　 ∧＿∧ 　　" << endl << 
+                "　（　´∀｀）＜　ぬるぽ" << endl;
+        assert(node);
+    }
+    return node;
+}
+// 隣接しているnodeをNULLポチェックして返す
+node_t* get_adjacent_node(node_t* node, string direction){
+    if(direction == "parent") return check_nullptr_node_t(node->parent_node);
+    if(direction == "child") return check_nullptr_node_t(node->child_node);
+    if(direction == "left") return check_nullptr_node_t(node->left_node);
+    if(direction == "right") return check_nullptr_node_t(node->right_node);
+}
 // TODO: 次の頂点の移動先に移動する関数（子->弟->親の順）. 返り値は移動先のノード
 node_t* get_next_node(node_t* node){
     // それぞれポインタ先の実値を指している
