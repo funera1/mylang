@@ -141,3 +141,12 @@ int to_num(string s){
 	}
 	return ret;
 }
+
+bool is_statement(string s){
+    // bnfでSTATEMENTから直接遷移しているもの
+    for(auto [src, dst] : bnf_transition_list){
+        if(src != "STATEMENT")continue;
+        if(s == dst[0])return true;
+    }
+    return false;
+}
