@@ -206,10 +206,6 @@ node_t* create_RST(vector<string> token_stream, vector<string> input_stream){
     return root;
 }
 
-// RSTをASTに変換する
-void RST_to_AST(node_t* root){
-    // ASTを走査する
-}
 // RSTを全部表示するプログラム
 // 親->兄弟->子の順で見せていく
 // void watch_all_RST(node_t* root){
