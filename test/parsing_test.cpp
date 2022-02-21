@@ -4,6 +4,7 @@
 #include "../lexical.cpp"
 #include "../parsing.cpp"
 #include "../init.cpp"
+#include "../RST.cpp"
 #include "../AST.cpp"
 
 int main(){
