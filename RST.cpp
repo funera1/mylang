@@ -23,10 +23,10 @@ node_t* init_node(string token){
     // TODO: strcpy使わんとダメ？
     node->token = token;
 
-    node->parent_node = NULL;
-    node->child_node = NULL;
-    node->right_node = NULL;
-    node->left_node = NULL;
+    node->parent_node = nullptr;
+    node->child_node = nullptr;
+    node->right_node = nullptr;
+    node->left_node = nullptr;
 
     return node;
 }
@@ -57,13 +57,13 @@ node_t* connect_brothers(vector<string> vs){
 }
 
 void release_node(node_t* node){
-    if(node->parent_node != NULL || node->child_node != NULL | node->right_node != NULL || node->left_node != NULL){
+    if(node->parent_node != nullptr || node->child_node != nullptr | node->right_node != nullptr || node->left_node != nullptr){
         cout << "child_node or borhter_node is not released" << endl;
         assert(0);
     }
     free(node);
     // ダブルフリーを防ぐ
-    node = NULL;
+    node = nullptr;
 }
 
 // TODO: どの子からでも親に移動する関数. 返り値は親のノード
@@ -72,7 +72,7 @@ node_t* get_parent_node(node_t* node){
     // 一番上まで来たら終了
     if(node->token == "PROGRAM")return node;
     // 左のノードがないとき
-    if(node->left_node == NULL){
+    if(node->left_node == nullptr){
         return node->parent_node;
     }
     else {
@@ -99,15 +99,15 @@ node_t* get_adjacent_node(node_t* node, string direction){
 // TODO: 次の頂点の移動先に移動する関数（子->弟->親の順）. 返り値は移動先のノード
 node_t* get_next_node(node_t* node){
     // それぞれポインタ先の実値を指している
-    if(node->child_node != NULL)return node->child_node;
-    if(node->right_node != NULL)return node->right_node;
+    if(node->child_node != nullptr)return node->child_node;
+    if(node->right_node != nullptr)return node->right_node;
 
 
     node_t* parent_node = get_parent_node(node);
     if(parent_node->token != "PROGRAM"){
         return parent_node;
     }
-    while(parent_node != NULL && parent_node->right_node == NULL)parent_node = get_parent_node(parent_node);
+    while(parent_node != nullptr && parent_node->right_node == nullptr)parent_node = get_parent_node(parent_node);
     return parent_node->right_node;
 }
 

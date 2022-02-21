@@ -30,11 +30,11 @@ expr_node* init_expr_node(int value, char op){
     expr_node* node = new expr_node;
     node->value = value;
     node->op = op;
-    node->next_node = NULL;
+    node->next_node = nullptr;
     return node;
 }
 
-assign_node* init_assign_node(string name, expr_node* expr_node = NULL){
+assign_node* init_assign_node(string name, expr_node* expr_node = nullptr){
     assign_node* node = new assign_node;
     node->name = name;
     node->expr_node = expr_node;
@@ -51,9 +51,9 @@ declaration_node* init_declaration_node(string type, string name){
 statement_node* init_statement_node(string statement_kind){
     statement_node* node = new statement_node;
     node->statement_kind = statement_kind;
-    node->next_statement_node = NULL;
-    node->assign_node = NULL;
-    node->declaration_node = NULL;
+    node->next_statement_node = nullptr;
+    node->assign_node = nullptr;
+    node->declaration_node = nullptr;
     return node;
 }
 
@@ -66,7 +66,7 @@ expr_node* construct_expr_node(node_t* node){
 // ID EXPR SEMICOLONの構造
 assign_node* construct_assign_node(node_t* node){
     string name = "";
-    expr_node* expr_node = NULL;
+    expr_node* expr_node = nullptr;
     node_t* tmp_node = node;
     // ID
     tmp_node = get_adjacent_node(tmp_node, "child");
