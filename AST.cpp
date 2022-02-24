@@ -52,13 +52,20 @@ declaration_node* init_declaration_node(string type, string name){
     return node;
 }
 
-statement_node* init_statement_node(string statement_kind){
-    statement_node* node = new statement_node;
-    node->statement_kind = statement_kind;
-    node->next_statement_node = nullptr;
-    node->assign_node = nullptr;
-    node->declaration_node = nullptr;
-    return node;
+statement_node* init_statement_node(string statement_kind, nonterm_node* nonterm_node){
+    statement_node* statement_node = new statement_node;
+    statement_node->statement_kind = statement_kind;
+    statement_node->next_statement_node = nullptr;
+    statement_node->assign_node = nullptr;
+    statement_node->declaration_node = nullptr;
+
+    if(statement_kind == "ASSIGN_STATEMENT"){
+        statement_node->assign_node = construct_assign_node(nonterm_node);
+    }
+    if(statement_kind == "DECLARATION_STATEMENT"){
+        statement_node->declaration_node = construct_declaration_node(nonterm_node);
+    }
+    return statement_node;
 }
 
 // 逆ポーランド法を引数に与えて木を返す
