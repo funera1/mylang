@@ -2,51 +2,64 @@
 #include "global_values.hpp"
 #include "parsing.cpp"
 
-typedef struct node {
+typedef struct term_node {
+    string token;
+
+    int number;
+    string id;
+} term_node;
+
+typedef struct nonterm_node {
     // token
     string token;
-    // 実値(これはtokenが#idか#numberのときのみ使う)
-    // 複雑になるのでとりあえずなしで
-    // int number;
-    // string id;
 
-    struct node* parent_node;
-    struct node* child_node;
-    struct node* right_node;
-    struct node* left_node;
+    struct nonterm_node* parent_node;
+    struct nonterm_node* child_node;
+    struct nonterm_node* right_node;
+    struct nonterm_node* left_node;
+    struct term_node* term_node;
+} nonterm_node;
 
-} node_t;
-
-node_t* init_node(string token){
-    node_t* node;
-    node = new node_t;
-    // TODO: strcpy使わんとダメ？
+nonterm_node* init_nonterm_node(string token){
+    nonterm_node* node;
+    node = new nonterm_node;
     node->token = token;
 
     node->parent_node = nullptr;
     node->child_node = nullptr;
     node->right_node = nullptr;
     node->left_node = nullptr;
+    node->term_node = nullptr;
 
     return node;
 }
 
-void connect_parent_and_child(node_t* parent_node, node_t* child_node){
+term_node* init_term_node(string token, int number, string id){
+    term_node* node;
+    node = new term_node;
+    node->token = token;
+    node->number = number;
+    node->id = id;
+    
+    return node;
+}
+
+void connect_parent_and_child(nonterm_node* parent_node, nonterm_node* child_node){
     parent_node->child_node = child_node;
     child_node->parent_node = parent_node;
 }
 
-void connect_brother_and_brother(node_t* left_node, node_t* right_node){
+void connect_brother_and_brother(nonterm_node* left_node, nonterm_node* right_node){
     left_node->right_node = right_node;
     right_node->left_node = left_node;
 }
 
 // A->abcという変換があったとき、abcを兄弟としたグラフを構築し、aに当たるノードを返す
-node_t* connect_brothers(vector<string> vs){
-    vector<node_t*> nodes(sz(vs));
+nonterm_node* connect_brothers(vector<string> vs){
+    vector<nonterm_node*> nodes(sz(vs));
     // それぞれに対応するノードを構成
     for(int i = 0; i < sz(nodes); i++){
-        nodes[i] = init_node(vs[i]);
+        nodes[i] = init_nonterm_node(vs[i]);
     }
     // 隣り合う兄弟間を辺でつなぐ
     for(int i = 0; i < sz(nodes)-1; i++){
@@ -56,7 +69,7 @@ node_t* connect_brothers(vector<string> vs){
     return nodes[0];
 }
 
-void release_node(node_t* node){
+void release_node(nonterm_node* node){
     if(node->parent_node != nullptr || node->child_node != nullptr | node->right_node != nullptr || node->left_node != nullptr){
         cout << "child_node or borhter_node is not released" << endl;
         assert(0);
@@ -66,8 +79,8 @@ void release_node(node_t* node){
     node = nullptr;
 }
 
-// TODO: どの子からでも親に移動する関数. 返り値は親のノード
-node_t* get_parent_node(node_t* node){
+// どの子からでも親に移動する関数. 返り値は親のノード
+nonterm_node* get_parent_node(nonterm_node* node){
     cout << "IN GET_PARENT_NODE: " << node->token << endl;
     // 一番上まで来たら終了
     if(node->token == "PROGRAM")return node;
@@ -81,7 +94,7 @@ node_t* get_parent_node(node_t* node){
 }
 
 // nodeをヌルポチェックして返す関数
-node_t* check_nullptr_node_t(node_t* node){
+nonterm_node* check_nullptr_nonterm_node(nonterm_node* node){
     if(node == nullptr){
         cout << "　 ∧＿∧ 　　" << endl << 
                 "　（　´∀｀）＜　ぬるぽ" << endl;
@@ -90,21 +103,21 @@ node_t* check_nullptr_node_t(node_t* node){
     return node;
 }
 // 隣接しているnodeをNULLポチェックして返す
-node_t* get_adjacent_node(node_t* node, string direction){
-    if(direction == "parent") return check_nullptr_node_t(node->parent_node);
-    if(direction == "child") return check_nullptr_node_t(node->child_node);
-    if(direction == "left") return check_nullptr_node_t(node->left_node);
-    if(direction == "right") return check_nullptr_node_t(node->right_node);
+nonterm_node* get_adjacent_node(nonterm_node* node, string direction){
+    if(direction == "parent") return check_nullptr_nonterm_node(node->parent_node);
+    if(direction == "child") return check_nullptr_nonterm_node(node->child_node);
+    if(direction == "left") return check_nullptr_nonterm_node(node->left_node);
+    if(direction == "right") return check_nullptr_nonterm_node(node->right_node);
 }
-// TODO: 次の頂点の移動先に移動する関数（子->弟->親の順）. 返り値は移動先のノード
-node_t* get_next_node(node_t* node){
+// 次の頂点の移動先に移動する関数（子->弟->親の順）. 返り値は移動先のノード
+nonterm_node* get_next_node(nonterm_node* node){
     // それぞれポインタ先の実値を指している
     if(node->child_node != nullptr)return node->child_node;
     if(node->right_node != nullptr)return node->right_node;
 
 
-    node_t* parent_node = get_parent_node(node);
-    if(parent_node->token != "PROGRAM"){
+    nonterm_node* parent_node = get_parent_node(node);
+    if(parent_node->token == "PROGRAM"){
         return parent_node;
     }
     while(parent_node != nullptr && parent_node->right_node == nullptr)parent_node = get_parent_node(parent_node);
@@ -113,10 +126,10 @@ node_t* get_next_node(node_t* node){
 
 // 木の根を返す
 // 木は非終端記号のノードしか持たない
-node_t* create_RST(vector<string> token_stream, vector<string> input_stream){
+nonterm_node* create_RST(vector<string> token_stream, vector<string> input_stream){
     // 木の根と現在地
-    node_t* root;
-    node_t* now_node;
+    nonterm_node* root;
+    nonterm_node* now_node;
 
     // Parsing
     Parsing p;
@@ -125,12 +138,13 @@ node_t* create_RST(vector<string> token_stream, vector<string> input_stream){
     // 初期値
     parsing_stack.push("$");
     parsing_stack.push("PROGRAM");
-    root = init_node("PROGRAM");
-    // バグるかも?
+    root = init_nonterm_node("PROGRAM");
+
     now_node = root;
 
     int token_stream_cursor = 0;
     while(token_stream_cursor < sz(token_stream)){
+        cout << "[now_node token is " << now_node->token << "]" << endl;
         auto token_i = token_stream[token_stream_cursor];
         string parsing_stack_top = parsing_stack.top();
         // stackのtopが$の場合
@@ -147,14 +161,27 @@ node_t* create_RST(vector<string> token_stream, vector<string> input_stream){
                 cout << "構文エラーです" << endl;
                 assert(0);
             }
+            now_node = get_next_node(now_node);
         }
         // stackのtopが#epsの場合
         else if(parsing_stack_top == "#eps"){
             // 入力を進めずにstackだけ抜く
             parsing_stack.pop();
+            now_node = get_next_node(now_node);
         }
         // stackのtopが終端記号の場合
         else if(is_term(parsing_stack_top)){
+            // #idと#numberのときだけRSTのノードをつなげる
+            if(token_i == "#id"){
+                term_node* term_node = init_term_node("#id", 0, input_stream[token_stream_cursor]);
+                now_node->term_node = term_node;
+            }
+            if(token_i == "#number"){
+                int number = to_num(input_stream[token_stream_cursor]);
+                term_node* term_node = init_term_node("#number", number, "");
+                now_node->term_node = term_node;
+            }
+
             if(token_i == parsing_stack_top){
                 token_stream_cursor++;
                 parsing_stack.pop();
@@ -163,6 +190,7 @@ node_t* create_RST(vector<string> token_stream, vector<string> input_stream){
                 cout << "構文エラーです" << endl;
                 assert(0);
             }
+            now_node = get_next_node(now_node);
         }
         // stackのtopが非終端記号の場合
         else {
@@ -176,18 +204,22 @@ node_t* create_RST(vector<string> token_stream, vector<string> input_stream){
 
             // assert(now_node->token == src);
             
+            // EPSはときはスルー
+            if(size(dst) > 0 && dst[0] == "EPS"){
+                now_node = get_next_node(now_node);
+            }
             // 木の操作は非終端記号についてのみ行う
             // そのため、nonterm->termのときはスルー
-            // また、EPSのときもスルー
-            if(size(dst) > 0 && (!is_term(dst[0]) || dst[0] == "EPS")){
+            else if(size(dst) > 0 && !is_term(dst[0])){
                 // DEBUG
-                // cout << now_node->token << ", ";
-                // cout << src << " -> ";
-                // for(auto di : dst)cout << di << ", ";
-                // cout << endl;
+                cout << now_node->token << ", ";
+                cout << src << " -> ";
+                for(auto di : dst)cout << di << ", ";
+                cout << endl;
                 // 子供ノードをつなげる
-                node_t* child_node_top = connect_brothers(dst);
-                connect_parent_and_child(now_node, child_node_top);
+                nonterm_node* child_nonterm_nodeop = connect_brothers(dst);
+                connect_parent_and_child(now_node, child_nonterm_nodeop);
+                now_node = get_next_node(now_node);
             }
 
             parsing_stack.pop();
@@ -196,8 +228,6 @@ node_t* create_RST(vector<string> token_stream, vector<string> input_stream){
                 parsing_stack.push(dst[dst_cur]);
             }
             cout << token_i << " " << parsing_stack_top << endl;
-            now_node = get_next_node(now_node);
-            cout << "END" << endl;
         }
         // DEBUG
         // cout << token_stream[token_stream_cursor] << endl;
@@ -208,17 +238,19 @@ node_t* create_RST(vector<string> token_stream, vector<string> input_stream){
 
 // RSTを全部表示するプログラム
 // 親->兄弟->子の順で見せていく
-// void watch_all_RST(node_t* root){
-//     node_t* now_node = root;
-//     while(now_node != NULL){
-//         node_t* brother_top_node = now_node;
-//         // 兄弟をすべて出力
-//         cout << now_node->token << " ";
-//         while(now_node->right_node != NULL){
-//             now_node = now_node->right_node;
-//             cout << now_node->token << " ";
-//         }
-//         cout << endl;
-//         now_node = brother_top_node->child_node;
-//     }
-// }
+void all_watch_RST(nonterm_node* root){
+    cout << "###### RST ######" << endl;
+    nonterm_node* now_node = root;
+    int cnt = 0;
+    while(now_node != nullptr && cnt < 2){
+        if(now_node->token == "PROGRAM")cnt++;
+        cout << now_node->token << endl;
+        if(now_node->term_node != nullptr){
+            term_node* term_node = now_node->term_node;
+            if(term_node->token == "#id")cout << term_node->id << endl;
+            if(term_node->token == "#number")cout << term_node->id << endl;
+        }
+        now_node = get_next_node(now_node);
+    }
+    cout << "###### END ######" << endl;
+}
