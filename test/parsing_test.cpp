@@ -62,5 +62,6 @@ int main(){
     p.parsing(token_stream);
     // DEBUG: RSTのテスト
     // node_t* node = init_node("TOKEN");
-    node_t* root = create_RST(token_stream, input_stream);
+    nonterm_node* root = create_RST(token_stream, input_stream);
+    all_watch_RST(root);
 }

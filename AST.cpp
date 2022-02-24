@@ -1,3 +1,4 @@
+#pragma once
 #include "tools.cpp"
 #include "RST.cpp"
 
@@ -12,7 +13,7 @@ typedef struct expr_node {
 
 typedef struct assign_node {
     string name;
-    expr_node* expr_node;
+    struct expr_node* expr_node;
 } assign_node;
 
 typedef struct declaration_node {
@@ -23,9 +24,13 @@ typedef struct declaration_node {
 typedef struct statement_node {
     string statement_kind;
     struct statement_node* next_statement_node;
-    assign_node* assign_node;
-    declaration_node* declaration_node;
+    struct assign_node* assign_node;
+    struct declaration_node* declaration_node;
 } statement_node;
+
+// 宣言
+assign_node* construct_assign_node(nonterm_node* node);
+declaration_node* construct_declaration_node(nonterm_node* node);
 
 // 各種ノードの初期化関数
 expr_node* init_expr_node(string token, int value, char op){
@@ -52,20 +57,20 @@ declaration_node* init_declaration_node(string type, string name){
     return node;
 }
 
-statement_node* init_statement_node(string statement_kind, nonterm_node* nonterm_node){
-    statement_node* statement_node = new statement_node;
-    statement_node->statement_kind = statement_kind;
-    statement_node->next_statement_node = nullptr;
-    statement_node->assign_node = nullptr;
-    statement_node->declaration_node = nullptr;
+statement_node* init_statement_node(string statement_kind, nonterm_node* nonterm_node = nullptr){
+    statement_node* state_node = new statement_node;
+    state_node->statement_kind = statement_kind;
+    state_node->next_statement_node = nullptr;
+    state_node->assign_node = nullptr;
+    state_node->declaration_node = nullptr;
 
     if(statement_kind == "ASSIGN_STATEMENT"){
-        statement_node->assign_node = construct_assign_node(nonterm_node);
+        state_node->assign_node = construct_assign_node(nonterm_node);
     }
     if(statement_kind == "DECLARATION_STATEMENT"){
-        statement_node->declaration_node = construct_declaration_node(nonterm_node);
+        state_node->declaration_node = construct_declaration_node(nonterm_node);
     }
-    return statement_node;
+    return state_node;
 }
 
 // 逆ポーランド法を引数に与えて木を返す
@@ -92,7 +97,7 @@ expr_node* reverse_polish_to_tree(vector<string> reverse_polish){
         // rp_iがnumber
         else {
             int number = to_num(rp_i);
-            expr_node* node = init_expr_node("number", number, '');
+            expr_node* node = init_expr_node("number", number, '\0');
             expr_node_stack.push(node);
         }
     }
@@ -104,10 +109,10 @@ expr_node* reverse_polish_to_tree(vector<string> reverse_polish){
 // 各種statementのノード構築
 expr_node* construct_expr_node(nonterm_node* node){
     // nonterm_nodeを走査して、数式(中値記法)を作る
-    nonterm_node* root = node;
+    nonterm_node* root_nonterm_node = node;
     vector<string> formula;
     node = get_next_node(node);
-    while(root != node){
+    while(root_nonterm_node != node){
         if(node->term_node != nullptr){
             term_node* term_node = node->term_node;
             // number
@@ -126,8 +131,17 @@ expr_node* construct_expr_node(nonterm_node* node){
     vector<string> reverse_polish = convert_reverse_polish(formula);
     
     // 逆ポーランドを木にする
-    expr_node* root = reverse_polish_to_tree(reverse_polish);
-    return root;
+    expr_node* root_expr_node = reverse_polish_to_tree(reverse_polish);
+    return root_expr_node;
+}
+
+string get_id_from_nonterm_node(nonterm_node* node){
+    if(node->term_node == nullptr){
+        cout << "idはありません" << endl;
+        return "";
+    }
+    term_node* term_node = node->term_node;
+    return term_node->id;
 }
 
 // 引数nodeのnode->tokenはASSIGN_STATEMENT
@@ -135,7 +149,7 @@ expr_node* construct_expr_node(nonterm_node* node){
 // ID EXPR SEMICOLONの構造
 assign_node* construct_assign_node(nonterm_node* node){
     string name = "";
-    expr_node* expr_node = nullptr;
+    expr_node* expr_node_ = nullptr;
     nonterm_node* tmp_node = node;
     // ID
     tmp_node = get_adjacent_node(tmp_node, "child");
@@ -143,9 +157,9 @@ assign_node* construct_assign_node(nonterm_node* node){
     // expr
     tmp_node = get_adjacent_node(tmp_node, "left"); // ASIGN
     tmp_node = get_adjacent_node(tmp_node, "left"); // EXPR
-    expr_node* expr_node = construct_expr_node(tmp_node);
-    assign_node* assign_node = init_assign_node(name, expr_node);
-    return assign_node;
+    expr_node_ = construct_expr_node(tmp_node);
+    assign_node* assign_node_ = init_assign_node(name, expr_node_);
+    return assign_node_;
 }
 
 // 引数nodeのnode->tokenはDECLARATION_STATEMENT
@@ -169,15 +183,20 @@ declaration_node* construct_declaration_node(nonterm_node* node){
 }
 
 // RSTをASTに変換する
-void RST_to_AST(nonterm_node* root){
+statement_node* RST_to_AST(nonterm_node* root_nonterm_node){
     // ASTを走査する
-    nonterm_node* now_node = root;
-    statement_node* statement_node = init_statement_node("ROOT");
-    while(1){
+    nonterm_node* now_nonterm_node = root_nonterm_node;
+    statement_node* root_statement_node = init_statement_node("ROOT");
+    statement_node* now_statement_node = root_statement_node;
+    now_nonterm_node = get_next_node(now_nonterm_node);
+    while(root_nonterm_node != now_nonterm_node){
         // nodeがstatement関連ならstatement_nodeを伸ばす
-        if(is_statement(now_node->token)){
-            auto next_statement_node = init_statement_node(now_node->token);
-            statement_node->next_statement_node = next_statement_node;
+        if(is_statement(now_nonterm_node->token)){
+            statement_node* next_statement_node = init_statement_node(now_nonterm_node->token);
+            now_statement_node->next_statement_node = next_statement_node;
+            now_statement_node = next_statement_node;
         }
+        now_nonterm_node = get_next_node(now_nonterm_node);
     }
+    return root_statement_node;
 }
