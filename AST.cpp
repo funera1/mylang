@@ -61,6 +61,39 @@ statement_node* init_statement_node(string statement_kind){
     return node;
 }
 
+// 逆ポーランド法を引数に与えて木を返す
+expr_node* reverse_polish_to_tree(vector<string> reverse_polish){
+    stack<expr_node*> expr_node_stack;
+    set<string> op_set = {"+", "-", "*", "/"};
+    for(auto rp_i : reverse_polish){
+        // まずrp_iをstackに入れる
+        // rp_iがop
+        // opの時はstackから2つ取り出して子にする
+        // そしてstackに入れる
+        if(is_in_set(op_set, rp_i)){
+            char op = rp_i[0];
+            expr_node* node = init_expr_node("op", 0, op);
+            expr_node* left_node = expr_node_stack.top();
+            expr_node_stack.pop();
+            expr_node* right_node = expr_node_stack.top();
+            expr_node_stack.pop();
+
+            node->left_node = left_node;
+            node->right_node = right_node;
+            expr_node_stack.push(node);
+        }
+        // rp_iがnumber
+        else {
+            int number = to_num(rp_i);
+            expr_node* node = init_expr_node("number", number, '');
+            expr_node_stack.push(node);
+        }
+    }
+    // 最後は一つになるはず
+    assert(expr_node_stack.size() == 1);
+    return expr_node_stack.top();
+}
+
 // 各種statementのノード構築
 expr_node* construct_expr_node(nonterm_node* node){
     // nonterm_nodeを走査して、数式(中値記法)を作る
@@ -86,6 +119,8 @@ expr_node* construct_expr_node(nonterm_node* node){
     vector<string> reverse_polish = convert_reverse_polish(formula);
     
     // 逆ポーランドを木にする
+    expr_node* root = reverse_polish_to_tree(reverse_polish);
+    return root;
 }
 
 // 引数nodeのnode->tokenはASSIGN_STATEMENT
