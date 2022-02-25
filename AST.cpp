@@ -22,7 +22,7 @@ typedef struct declaration_node {
 } declaration_node;
 
 typedef struct statement_node {
-    string statement_kind;
+    string token;
     struct statement_node* next_statement_node;
     struct assign_node* assign_node;
     struct declaration_node* declaration_node;
@@ -57,17 +57,17 @@ declaration_node* init_declaration_node(string type, string name){
     return node;
 }
 
-statement_node* init_statement_node(string statement_kind, nonterm_node* nonterm_node = nullptr){
+statement_node* init_statement_node(string token, nonterm_node* nonterm_node = nullptr){
     statement_node* state_node = new statement_node;
-    state_node->statement_kind = statement_kind;
+    state_node->token = token;
     state_node->next_statement_node = nullptr;
     state_node->assign_node = nullptr;
     state_node->declaration_node = nullptr;
 
-    if(statement_kind == "ASSIGN_STATEMENT"){
+    if(token == "ASSIGN_STATEMENT"){
         state_node->assign_node = construct_assign_node(nonterm_node);
     }
-    if(statement_kind == "DECLARATION_STATEMENT"){
+    if(token == "DECLARATION_STATEMENT"){
         state_node->declaration_node = construct_declaration_node(nonterm_node);
     }
     return state_node;
@@ -189,14 +189,25 @@ statement_node* RST_to_AST(nonterm_node* root_nonterm_node){
     statement_node* root_statement_node = init_statement_node("ROOT");
     statement_node* now_statement_node = root_statement_node;
     now_nonterm_node = get_next_node(now_nonterm_node);
+    cout << now_nonterm_node->token << endl;
     while(root_nonterm_node != now_nonterm_node){
+        cout << now_nonterm_node->token << endl;
         // nodeがstatement関連ならstatement_nodeを伸ばす
         if(is_statement(now_nonterm_node->token)){
+            cout << "is_statement" << endl;
             statement_node* next_statement_node = init_statement_node(now_nonterm_node->token);
             now_statement_node->next_statement_node = next_statement_node;
             now_statement_node = next_statement_node;
         }
         now_nonterm_node = get_next_node(now_nonterm_node);
     }
+    cout << "AST作成完了" << endl;
     return root_statement_node;
+}
+
+void all_watch_AST(statement_node* node){
+    while(node->next_statement_node != nullptr){
+        cout << node->token << endl;
+        node = node->next_statement_node;
+    }
 }
