@@ -82,7 +82,8 @@ void release_node(nonterm_node* node){
 
 // どの子からでも親に移動する関数. 返り値は親のノード
 nonterm_node* get_parent_node(nonterm_node* node){
-    cout << "IN GET_PARENT_NODE: " << node->token << endl;
+    // DEBUG
+    // cout << "IN GET_PARENT_NODE: " << node->token << endl;
     // 一番上まで来たら終了
     if(node->token == "PROGRAM")return node;
     // 左のノードがないとき
@@ -145,7 +146,8 @@ nonterm_node* create_RST(vector<string> token_stream, vector<string> input_strea
 
     int token_stream_cursor = 0;
     while(token_stream_cursor < sz(token_stream)){
-        cout << "[now_node token is " << now_node->token << "]" << endl;
+        // DEBUG
+        // cout << "[now_node token is " << now_node->token << "]" << endl;
         auto token_i = token_stream[token_stream_cursor];
         string parsing_stack_top = parsing_stack.top();
         // stackのtopが$の場合
@@ -217,8 +219,8 @@ nonterm_node* create_RST(vector<string> token_stream, vector<string> input_strea
             // そのため、nonterm->termのときはスルー
             else if(size(dst) > 0 && !is_term(dst[0])){
                 // DEBUG
-                cout << now_node->token << ", ";
-                cout << src << " -> ";
+                // cout << now_node->token << ", ";
+                // cout << src << " -> ";
                 for(auto di : dst)cout << di << ", ";
                 cout << endl;
                 // 子供ノードをつなげる
@@ -232,7 +234,7 @@ nonterm_node* create_RST(vector<string> token_stream, vector<string> input_strea
             for(int dst_cur = sz(dst) - 1; dst_cur >= 0; dst_cur--){
                 parsing_stack.push(dst[dst_cur]);
             }
-            cout << token_i << " " << parsing_stack_top << endl;
+            // cout << token_i << " " << parsing_stack_top << endl;
         }
         // DEBUG
         // cout << token_stream[token_stream_cursor] << endl;
