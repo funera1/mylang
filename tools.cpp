@@ -150,3 +150,38 @@ bool is_statement(string s){
     }
     return false;
 }
+
+// 中値記法の数式を逆ポーランド法にして返す。(vector<string>)
+vector<string> convert_reverse_polish(vector<string> formula){
+    vector<string> reverse_polish;
+    stack<string> op_stack;
+    for(auto rp_i : reverse_polish){
+        if(rp_i == "("){
+            op_stack.push(rp_i);
+        }
+        if(rp_i == ")"){
+            while(op_stack.top() != "("){
+                reverse_polish.push_back(op_stack.top());
+                op_stack.pop();
+            }
+            assert(op_stack.top() == "(");
+            op_stack.pop();
+        }
+        if(rp_i == "*" || rp_i == "/"){
+            op_stack.push(rp_i);
+        }
+        if(rp_i == "+" || rp_i == "-"){
+            // stack.topの方が優先度高かったらそっち先に入れる
+            if(op_stack.top() == "*" || op_stack.top() == "/"){
+                reverse_polish.push_back(op_stack.top());
+                op_stack.pop();
+                op_stack.push(rp_i);
+            }
+            // それ以外は普通
+            else {
+                op_stack.push(rp_i);
+            }
+        }
+    }
+	return reverse_polish;
+}
