@@ -124,9 +124,12 @@ expr_node* construct_expr_node(nonterm_node* node){
     // nonterm_nodeを走査して、数式(中値記法)を作る
     nonterm_node* root_nonterm_node = node;
     vector<string> formula;
-    node = get_next_node(node);
+    cout << endl << "### CONSTRUCT EXPR NODE ###" << endl;
+    cout << root_nonterm_node->token << endl;
+    node = get_next_node(node, root_nonterm_node);
     while(root_nonterm_node != node){
         if(node->term_node != nullptr){
+            cout << "in term" << endl;
             term_node* term_node = node->term_node;
             // number
             if(term_node->token == "#id"){
@@ -137,12 +140,12 @@ expr_node* construct_expr_node(nonterm_node* node){
                 formula.push_back(term_node->token);
             }
         }
-        node = get_next_node(node);
+        node = get_next_node(node, root_nonterm_node);
     }
     // DEBUG
-    cout << "formula is check" << endl;
+    cout << endl << "### formula is check ###" << endl;
     for(auto fi : formula)cout << fi << " ";
-    cout << endl;
+    cout << endl << "### end ###" << endl;
     
     // 中値記法を逆ポーランド記法に変換する
     vector<string> reverse_polish = convert_reverse_polish(formula);

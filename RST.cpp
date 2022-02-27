@@ -112,14 +112,18 @@ nonterm_node* get_adjacent_node(nonterm_node* node, string direction){
     if(direction == "right") return check_nullptr_nonterm_node(node->right_node);
 }
 // 次の頂点の移動先に移動する関数（子->弟->親の順）. 返り値は移動先のノード
-nonterm_node* get_next_node(nonterm_node* node){
+nonterm_node* get_next_node(nonterm_node* node, nonterm_node* root = nullptr){
     // それぞれポインタ先の実値を指している
     if(node->child_node != nullptr)return node->child_node;
     if(node->right_node != nullptr)return node->right_node;
 
 
     nonterm_node* parent_node = get_parent_node(node);
-    if(parent_node->token == "PROGRAM"){
+    // root == nullptrのときはtokenがPROGRAMがルートになる
+    if(root == nullptr && parent_node->token == "PROGRAM"){
+        return parent_node;
+    }
+    if(root != nullptr && parent_node == root){
         return parent_node;
     }
     while(parent_node != nullptr && parent_node->right_node == nullptr)parent_node = get_parent_node(parent_node);
@@ -255,7 +259,7 @@ void all_watch_RST(nonterm_node* root){
         if(now_node->term_node != nullptr){
             term_node* term_node = now_node->term_node;
             if(term_node->token == "#id")cout << term_node->id << endl;
-            if(term_node->token == "#number")cout << term_node->id << endl;
+            if(term_node->token == "#number")cout << term_node->number << endl;
         }
         now_node = get_next_node(now_node);
     }
