@@ -84,9 +84,12 @@ statement_node* init_statement_node(nonterm_node* nonterm_node){
 
 // 逆ポーランド法を引数に与えて木を返す
 expr_node* reverse_polish_to_tree(vector<string> reverse_polish){
+    // DEBUG
+    cout << "### start reverse polis to tree ###" << endl;
     stack<expr_node*> expr_node_stack;
     set<string> op_set = {"+", "-", "*", "/"};
     for(auto rp_i : reverse_polish){
+        cout << rp_i << endl;
         // まずrp_iをstackに入れる
         // rp_iがop
         // opの時はstackから2つ取り出して子にする
@@ -112,6 +115,7 @@ expr_node* reverse_polish_to_tree(vector<string> reverse_polish){
     }
     // 最後は一つになるはず
     assert(expr_node_stack.size() == 1);
+    cout << "### end reverse polis to tree ###" << endl;
     return expr_node_stack.top();
 }
 
@@ -135,6 +139,10 @@ expr_node* construct_expr_node(nonterm_node* node){
         }
         node = get_next_node(node);
     }
+    // DEBUG
+    cout << "formula is check" << endl;
+    for(auto fi : formula)cout << fi << " ";
+    cout << endl;
     
     // 中値記法を逆ポーランド記法に変換する
     vector<string> reverse_polish = convert_reverse_polish(formula);
@@ -163,11 +171,15 @@ assign_node* construct_assign_node(nonterm_node* node){
     // ID
     tmp_node = get_adjacent_node(tmp_node, "child");
     name = get_id_from_nonterm_node(tmp_node);
+    cout << "name is OK" << endl;
     // expr
-    tmp_node = get_adjacent_node(tmp_node, "left"); // ASIGN
-    tmp_node = get_adjacent_node(tmp_node, "left"); // EXPR
+    tmp_node = get_adjacent_node(tmp_node, "right"); // ASIGN
+    cout << "assign is OK" << endl;
+    tmp_node = get_adjacent_node(tmp_node, "right"); // EXPR
+    cout << "expr is OK" << endl;
     expr_node_ = construct_expr_node(tmp_node);
     assign_node* assign_node_ = init_assign_node(name, expr_node_);
+    cout << "init_assign_node is OK" << endl;
     return assign_node_;
 }
 
