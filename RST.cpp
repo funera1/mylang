@@ -148,6 +148,10 @@ nonterm_node* create_RST(vector<string> token_stream, vector<string> input_strea
     while(token_stream_cursor < sz(token_stream)){
         // DEBUG
         // cout << "[now_node token is " << now_node->token << "]" << endl;
+        // cout << token_stream[token_stream_cursor] << endl;
+        // all_watch_in_stack(parsing_stack);
+        // cout << endl;
+
         auto token_i = token_stream[token_stream_cursor];
         string parsing_stack_top = parsing_stack.top();
         // stackのtopが$の場合
@@ -209,20 +213,16 @@ nonterm_node* create_RST(vector<string> token_stream, vector<string> input_strea
             }
             auto [src, dst] = bnf_transition_list[transition_num];
 
-            // assert(now_node->token == src);
+            assert(now_node->token == src);
             
-            // EPSはときはスルー
-            if(size(dst) > 0 && dst[0] == "EPS"){
-                now_node = get_next_node(now_node);
-            }
             // 木の操作は非終端記号についてのみ行う
             // そのため、nonterm->termのときはスルー
-            else if(size(dst) > 0 && !is_term(dst[0])){
+            if(size(dst) > 0 && !is_term(dst[0])){
                 // DEBUG
                 // cout << now_node->token << ", ";
                 // cout << src << " -> ";
-                for(auto di : dst)cout << di << ", ";
-                cout << endl;
+                // for(auto di : dst)cout << di << ", ";
+                // cout << endl;
                 // 子供ノードをつなげる
                 nonterm_node* child_nonterm_nodeop = connect_brothers(dst);
                 connect_parent_and_child(now_node, child_nonterm_nodeop);
@@ -236,9 +236,6 @@ nonterm_node* create_RST(vector<string> token_stream, vector<string> input_strea
             }
             // cout << token_i << " " << parsing_stack_top << endl;
         }
-        // DEBUG
-        // cout << token_stream[token_stream_cursor] << endl;
-        // all_watch_in_stack(parsing_stack);
     }
     return root;
 }
