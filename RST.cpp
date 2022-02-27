@@ -100,7 +100,7 @@ nonterm_node* check_nullptr_nonterm_node(nonterm_node* node){
     if(node == nullptr){
         cout << "　 ∧＿∧ 　　" << endl << 
                 "　（　´∀｀）＜　ぬるぽ" << endl;
-        assert(node);
+        assert(0);
     }
     return node;
 }
