@@ -57,7 +57,16 @@ declaration_node* init_declaration_node(string type, string name){
     return node;
 }
 
-statement_node* init_statement_node(string token, nonterm_node* nonterm_node = nullptr){
+statement_node* init_root_statement_node(){
+    statement_node* state_node = new statement_node; 
+    state_node->token = "ROOT";
+    state_node->next_statement_node = nullptr;
+    state_node->assign_node = nullptr;
+    state_node->declaration_node = nullptr;
+    return state_node;
+}
+statement_node* init_statement_node(nonterm_node* nonterm_node){
+    string token = nonterm_node->token;
     statement_node* state_node = new statement_node;
     state_node->token = token;
     state_node->next_statement_node = nullptr;
@@ -173,11 +182,12 @@ declaration_node* construct_declaration_node(nonterm_node* node){
     // INT
     tmp_node = get_adjacent_node(tmp_node, "child");
     type = tmp_node->token;
+    cout << "type is OK" << endl;
     // ID
-    tmp_node = get_adjacent_node(tmp_node, "left");
+    tmp_node = get_adjacent_node(tmp_node, "right");
+    cout << "name is OK" << endl;
     // IDやNUMBERなどの実値をRSTと結び付けられてない
     name = get_id_from_nonterm_node(tmp_node);
-
     declaration_node* declaration_node = init_declaration_node(type, name);
     return declaration_node;
 }
@@ -186,7 +196,7 @@ declaration_node* construct_declaration_node(nonterm_node* node){
 statement_node* RST_to_AST(nonterm_node* root_nonterm_node){
     // ASTを走査する
     nonterm_node* now_nonterm_node = root_nonterm_node;
-    statement_node* root_statement_node = init_statement_node("ROOT");
+    statement_node* root_statement_node = init_root_statement_node();
     statement_node* now_statement_node = root_statement_node;
     now_nonterm_node = get_next_node(now_nonterm_node);
     cout << now_nonterm_node->token << endl;
@@ -194,8 +204,9 @@ statement_node* RST_to_AST(nonterm_node* root_nonterm_node){
         cout << now_nonterm_node->token << endl;
         // nodeがstatement関連ならstatement_nodeを伸ばす
         if(is_statement(now_nonterm_node->token)){
-            cout << "is_statement" << endl;
-            statement_node* next_statement_node = init_statement_node(now_nonterm_node->token);
+            // DEBUG
+            cout << "statement is " << now_nonterm_node->token << endl;
+            statement_node* next_statement_node = init_statement_node(now_nonterm_node);
             now_statement_node->next_statement_node = next_statement_node;
             now_statement_node = next_statement_node;
         }
