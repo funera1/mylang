@@ -63,7 +63,7 @@ int main(){
     // DEBUG: RSTのテスト
     // node_t* node = init_node("TOKEN");
     nonterm_node* root = create_RST(token_stream, input_stream);
-    all_watch_RST(root);
+    // all_watch_RST(root);
     statement_node* st_root = RST_to_AST(root);
-    // all_watch_AST(st_root);
+    all_watch_AST(st_root);
 }
