@@ -230,12 +230,38 @@ statement_node* RST_to_AST(nonterm_node* root_nonterm_node){
     return root_statement_node;
 }
 
+void watch_expr_node(expr_node* node){
+    if(node == nullptr){
+        cout << endl;
+        return;
+    }
+    if(node->token == "number")cout << node->value << endl;
+    if(node->token == "op")cout << node->op << endl;
+    cout << "left is ";
+    watch_expr_node(node->left_node);
+    cout << "right is ";
+    watch_expr_node(node->right_node);
+    cout << "end" << endl;
+}
+
 void all_watch_AST(statement_node* node){
     cout << "### AST ###" << endl;
     while(node != nullptr){
         cout << node->token << endl;
+        if(node->token == "ASSIGN_STATEMENT"){
+            auto a = node->assign_node;
+            cout << "name is " << a->name << endl;
+            watch_expr_node(a->expr_node);
+        }
+        if(node->token == "DECLARATION_STATEMENT"){
+            auto d = node->declaration_node;
+            cout << "type is " << d->type << endl;
+            cout << "name is " << d->name << endl;
+        }
         if(node->next_statement_node == nullptr)break;
         node = node->next_statement_node;
     }
     cout << "### END ###" << endl;
 }
+
+
