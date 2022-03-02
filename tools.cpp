@@ -155,11 +155,14 @@ bool is_statement(string s){
 vector<string> convert_reverse_polish(vector<string> formula){
     vector<string> reverse_polish;
     stack<string> op_stack;
-    for(auto rp_i : reverse_polish){
-        if(rp_i == "("){
-            op_stack.push(rp_i);
+	// DEBUG
+	cout << "### start convert_reverse_polish ###" << endl;
+	// for(string fi : formula)cout << fi << " ";cout << endl;
+    for(auto fi : formula){
+        if(fi == "("){
+            op_stack.push(fi);
         }
-        if(rp_i == ")"){
+        else if(fi == ")"){
             while(op_stack.top() != "("){
                 reverse_polish.push_back(op_stack.top());
                 op_stack.pop();
@@ -167,21 +170,30 @@ vector<string> convert_reverse_polish(vector<string> formula){
             assert(op_stack.top() == "(");
             op_stack.pop();
         }
-        if(rp_i == "*" || rp_i == "/"){
-            op_stack.push(rp_i);
+        else if(fi == "*" || fi == "/"){
+            op_stack.push(fi);
         }
-        if(rp_i == "+" || rp_i == "-"){
+        else if(fi == "+" || fi == "-"){
             // stack.topの方が優先度高かったらそっち先に入れる
-            if(op_stack.top() == "*" || op_stack.top() == "/"){
+            if(sz(op_stack) && (op_stack.top() == "*" || op_stack.top() == "/")){
                 reverse_polish.push_back(op_stack.top());
                 op_stack.pop();
-                op_stack.push(rp_i);
+                op_stack.push(fi);
             }
             // それ以外は普通
             else {
-                op_stack.push(rp_i);
+                op_stack.push(fi);
             }
         }
+		// 数字のとき
+		else {
+			reverse_polish.push_back(fi);
+		}
     }
+	// stackの中身を全部reverse_polishに移す
+	while(sz(op_stack)){
+		reverse_polish.push_back(op_stack.top());
+		op_stack.pop();
+	}
 	return reverse_polish;
 }
