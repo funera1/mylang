@@ -100,7 +100,7 @@ nonterm_node* check_nullptr_nonterm_node(nonterm_node* node){
     if(node == nullptr){
         cout << "　 ∧＿∧ 　　" << endl << 
                 "　（　´∀｀）＜　ぬるぽ" << endl;
-        assert(node);
+        assert(0);
     }
     return node;
 }
@@ -112,18 +112,22 @@ nonterm_node* get_adjacent_node(nonterm_node* node, string direction){
     if(direction == "right") return check_nullptr_nonterm_node(node->right_node);
 }
 // 次の頂点の移動先に移動する関数（子->弟->親の順）. 返り値は移動先のノード
-nonterm_node* get_next_node(nonterm_node* node){
-    // それぞれポインタ先の実値を指している
+nonterm_node* get_next_node(nonterm_node* node, nonterm_node* root = nullptr){
     if(node->child_node != nullptr)return node->child_node;
     if(node->right_node != nullptr)return node->right_node;
 
-
-    nonterm_node* parent_node = get_parent_node(node);
-    if(parent_node->token == "PROGRAM"){
-        return parent_node;
+    // nonterm_node* parent_node = get_parent_node(node);
+    // if(root != nullptr)cout << "parenet_node is " <<  parent_node->token << ", root_node is " << root->token << endl;
+    while(node != nullptr && node->right_node == nullptr){
+        node = get_parent_node(node);
+        if(root != nullptr && root == node){
+            return node;
+        }
+        if(node->token == "PROGRAM"){
+            return node;
+        }
     }
-    while(parent_node != nullptr && parent_node->right_node == nullptr)parent_node = get_parent_node(parent_node);
-    return parent_node->right_node;
+    return node->right_node;
 }
 
 // 木の根を返す
@@ -148,6 +152,10 @@ nonterm_node* create_RST(vector<string> token_stream, vector<string> input_strea
     while(token_stream_cursor < sz(token_stream)){
         // DEBUG
         // cout << "[now_node token is " << now_node->token << "]" << endl;
+        // cout << token_stream[token_stream_cursor] << endl;
+        // all_watch_in_stack(parsing_stack);
+        // cout << endl;
+
         auto token_i = token_stream[token_stream_cursor];
         string parsing_stack_top = parsing_stack.top();
         // stackのtopが$の場合
@@ -209,20 +217,16 @@ nonterm_node* create_RST(vector<string> token_stream, vector<string> input_strea
             }
             auto [src, dst] = bnf_transition_list[transition_num];
 
-            // assert(now_node->token == src);
+            assert(now_node->token == src);
             
-            // EPSはときはスルー
-            if(size(dst) > 0 && dst[0] == "EPS"){
-                now_node = get_next_node(now_node);
-            }
             // 木の操作は非終端記号についてのみ行う
             // そのため、nonterm->termのときはスルー
-            else if(size(dst) > 0 && !is_term(dst[0])){
+            if(size(dst) > 0 && !is_term(dst[0])){
                 // DEBUG
                 // cout << now_node->token << ", ";
                 // cout << src << " -> ";
-                for(auto di : dst)cout << di << ", ";
-                cout << endl;
+                // for(auto di : dst)cout << di << ", ";
+                // cout << endl;
                 // 子供ノードをつなげる
                 nonterm_node* child_nonterm_nodeop = connect_brothers(dst);
                 connect_parent_and_child(now_node, child_nonterm_nodeop);
@@ -236,28 +240,50 @@ nonterm_node* create_RST(vector<string> token_stream, vector<string> input_strea
             }
             // cout << token_i << " " << parsing_stack_top << endl;
         }
-        // DEBUG
-        // cout << token_stream[token_stream_cursor] << endl;
-        // all_watch_in_stack(parsing_stack);
     }
     return root;
+}
+
+nonterm_node* get_next_node_greedy(nonterm_node* node, map<nonterm_node*, bool> seen){
+    // 子, 弟, 兄, 親の順
+    if(!seen[node->child_node] && node->child_node != nullptr){
+        cout << "child ";
+        return node->child_node;
+    }
+    if(!seen[node->right_node] && node->right_node != nullptr){
+        cout << "right ";
+        return node->right_node;
+    }
+    if(node->left_node != nullptr){
+        cout << "left ";
+        return node->left_node;
+    }
+    if(node->parent_node != nullptr){
+        cout << "parent ";
+        return node->parent_node;
+    }
+    cout << "何もない" << endl;
+    assert(0);
 }
 
 // RSTを全部表示するプログラム
 // 親->兄弟->子の順で見せていく
 void all_watch_RST(nonterm_node* root){
+    map<nonterm_node*, bool> seen;
     cout << "###### RST ######" << endl;
     nonterm_node* now_node = root;
     int cnt = 0;
     while(now_node != nullptr && cnt < 2){
+        seen[now_node] = true;
         if(now_node->token == "PROGRAM")cnt++;
         cout << now_node->token << endl;
+        if(cnt >= 2)break;
         if(now_node->term_node != nullptr){
             term_node* term_node = now_node->term_node;
             if(term_node->token == "#id")cout << term_node->id << endl;
-            if(term_node->token == "#number")cout << term_node->id << endl;
+            if(term_node->token == "#number")cout << term_node->number << endl;
         }
-        now_node = get_next_node(now_node);
+        now_node = get_next_node_greedy(now_node, seen);
     }
     cout << "###### END ######" << endl;
 }
