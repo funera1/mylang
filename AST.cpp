@@ -97,9 +97,9 @@ expr_node* reverse_polish_to_tree(vector<string> reverse_polish){
         if(is_in_set(op_set, rp_i)){
             char op = rp_i[0];
             expr_node* node = init_expr_node("op", 0, op);
-            expr_node* left_node = expr_node_stack.top();
-            expr_node_stack.pop();
             expr_node* right_node = expr_node_stack.top();
+            expr_node_stack.pop();
+            expr_node* left_node = expr_node_stack.top();
             expr_node_stack.pop();
 
             node->left_node = left_node;
