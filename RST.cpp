@@ -113,21 +113,21 @@ nonterm_node* get_adjacent_node(nonterm_node* node, string direction){
 }
 // 次の頂点の移動先に移動する関数（子->弟->親の順）. 返り値は移動先のノード
 nonterm_node* get_next_node(nonterm_node* node, nonterm_node* root = nullptr){
-    // それぞれポインタ先の実値を指している
     if(node->child_node != nullptr)return node->child_node;
     if(node->right_node != nullptr)return node->right_node;
 
-
-    nonterm_node* parent_node = get_parent_node(node);
-    if(root != nullptr)cout << "parenet_node is " <<  parent_node->token << ", root_node is " << root->token << endl;
-    if(root != nullptr && root == parent_node){
-        return parent_node;
+    // nonterm_node* parent_node = get_parent_node(node);
+    // if(root != nullptr)cout << "parenet_node is " <<  parent_node->token << ", root_node is " << root->token << endl;
+    while(node != nullptr && node->right_node == nullptr){
+        node = get_parent_node(node);
+        if(root != nullptr && root == node){
+            return node;
+        }
+        if(node->token == "PROGRAM"){
+            return node;
+        }
     }
-    if(parent_node->token == "PROGRAM"){
-        return parent_node;
-    }
-    while(parent_node != nullptr && parent_node->right_node == nullptr)parent_node = get_parent_node(parent_node);
-    return parent_node->right_node;
+    return node->right_node;
 }
 
 // 木の根を返す
@@ -277,6 +277,7 @@ void all_watch_RST(nonterm_node* root){
         seen[now_node] = true;
         if(now_node->token == "PROGRAM")cnt++;
         cout << now_node->token << endl;
+        if(cnt >= 2)break;
         if(now_node->term_node != nullptr){
             term_node* term_node = now_node->term_node;
             if(term_node->token == "#id")cout << term_node->id << endl;
