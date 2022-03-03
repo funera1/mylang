@@ -61,7 +61,8 @@ string firstCheckToken(char c){
 // IDがtokenでないか確かめる
 string checkIdIsToken(string s){
 	if(s == "int")return "INT";
-	else return "ID";
+	if(s == "if")return "IF";
+	return "ID";
 }
 
 // 終端記号かチェック
