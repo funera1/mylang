@@ -59,7 +59,7 @@ string firstCheckToken(char c){
 }
 
 // IDがtokenでないか確かめる
-string checkIdIsToken(string s){
+string check_id_is_keyword(string s){
 	if(s == "int")return "INT";
 	if(s == "if")return "IF";
 	return "ID";
