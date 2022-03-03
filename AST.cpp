@@ -283,9 +283,9 @@ int calc_expr_node(expr_node* node){
     }
     else if(node->op == '/'){
         // ゼロ除算禁止
-        if(calc_expr_node(node->right_node) != 0){
+        if(calc_expr_node(node->right_node) == 0){
             cout << "ゼロ除算!!" << endl;
-            return 0;
+            assert(0);
         }
         res = calc_expr_node(node->left_node) / calc_expr_node(node->right_node);
     }

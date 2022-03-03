@@ -38,7 +38,7 @@ pair<vector<string>, vector<string>> lexicalAnalysis(string str){
 				now_word.push_back(str[i]);
 			}
 		}
-		if(now_token == "ID")now_token = checkIdIsToken(now_word);
+		if(now_token == "ID")now_token = check_id_is_keyword(now_word);
 		input_stream.push_back(now_word);
 
 		if(now_token == "ID")token_stream.push_back("#id");
