@@ -1,7 +1,7 @@
 #pragma once
 #include "../include.cpp"
 #include "../global_values.hpp"
-#include "../AST.cpp"
+#include "../ast/AST.cpp"
 
 struct variable_info {
     string type;
