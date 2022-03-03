@@ -6,6 +6,7 @@
 #include "../init.cpp"
 #include "../RST.cpp"
 #include "../AST.cpp"
+#include "../interpreter/interpreter.cpp"
 
 int main(){
 	string str = fileToString("input.txt");
@@ -66,4 +67,5 @@ int main(){
     // all_watch_RST(root);
     statement_node* st_root = RST_to_AST(root);
     all_watch_AST(st_root);
+    interpreter(st_root);
 }
