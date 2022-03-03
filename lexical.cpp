@@ -31,14 +31,14 @@ pair<vector<string>, vector<string>> lexicalAnalysis(string str){
 				now_word.push_back(str[i]);
 			}
 		}
-		// 	// 数字の時. 数字が続く限り繰り返す
+		// 数字の時. 数字が続く限り繰り返す
 		else if(now_token == "NUMBER"){
 			while(i + 1 < sz(str) && firstCheckToken(str[i + 1]) == "NUMBER"){
 				i++;
 				now_word.push_back(str[i]);
 			}
 		}
-		if(now_token == "ID")now_token = checkIdIsToken(now_word);
+		if(now_token == "ID")now_token = check_id_is_keyword(now_word);
 		input_stream.push_back(now_word);
 
 		if(now_token == "ID")token_stream.push_back("#id");
