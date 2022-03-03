@@ -57,7 +57,7 @@ void interpreter(statement_node* root){
                 assert(0);
             }
             assign_value_int(name, value_int);
-            // テスト
+            // DEBUG
             cout << "DEBUG: " << name << " is " << value_int << endl;
         }
     }
