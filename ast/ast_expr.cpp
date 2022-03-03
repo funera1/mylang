@@ -23,7 +23,6 @@ expr_node* init_expr_node(string token, int value, char op){
 // 逆ポーランド法を引数に与えて木を返す
 expr_node* reverse_polish_to_tree(vector<string> reverse_polish){
     // DEBUG
-    cout << "### start reverse polis to tree ###" << endl;
     stack<expr_node*> expr_node_stack;
     set<string> op_set = {"+", "-", "*", "/"};
     for(auto rp_i : reverse_polish){
@@ -52,7 +51,6 @@ expr_node* reverse_polish_to_tree(vector<string> reverse_polish){
     }
     // 最後は一つになるはず
     assert(expr_node_stack.size() == 1);
-    cout << "### end reverse polis to tree ###" << endl;
     return expr_node_stack.top();
 }
 
