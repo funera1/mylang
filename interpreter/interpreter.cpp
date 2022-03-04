@@ -1,7 +1,7 @@
 #pragma once
 #include "../include.cpp"
 #include "../global_values.hpp"
-#include "../AST.cpp"
+#include "../ast/AST.cpp"
 
 struct variable_info {
     string type;
@@ -59,6 +59,14 @@ void interpreter(statement_node* root){
             assign_value_int(name, value_int);
             // DEBUG
             cout << "DEBUG: " << name << " is " << value_int << endl;
+        }
+        if(node->token == "IF_STATEMENT"){
+            auto if_node = node->if_node;
+            int value = calc_expr_node(if_node->conditional_expr_node);
+            // 条件式の中身が1以上のときのみ実行する
+            if(value > 0){
+                interpreter(if_node->statment_node);
+            }
         }
     }
 }

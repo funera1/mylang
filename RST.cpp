@@ -287,3 +287,12 @@ void all_watch_RST(nonterm_node* root){
     }
     cout << "###### END ######" << endl;
 }
+
+string get_id_from_nonterm_node(nonterm_node* node){
+    if(node->term_node == nullptr){
+        cout << "idはありません" << endl;
+        return "";
+    }
+    term_node* term_node = node->term_node;
+    return term_node->id;
+}

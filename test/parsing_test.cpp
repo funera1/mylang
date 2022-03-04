@@ -5,7 +5,7 @@
 #include "../parsing.cpp"
 #include "../init.cpp"
 #include "../RST.cpp"
-#include "../AST.cpp"
+#include "../ast/AST.cpp"
 #include "../interpreter/interpreter.cpp"
 
 int main(){

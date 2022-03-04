@@ -157,7 +157,6 @@ vector<string> convert_reverse_polish(vector<string> formula){
     vector<string> reverse_polish;
     stack<string> op_stack;
 	// DEBUG
-	cout << "### start convert_reverse_polish ###" << endl;
 	// for(string fi : formula)cout << fi << " ";cout << endl;
     for(auto fi : formula){
         if(fi == "("){
