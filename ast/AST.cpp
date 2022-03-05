@@ -59,7 +59,7 @@ statement_node* RST_to_AST(nonterm_node* root_nonterm_node){
         // nodeがstatement関連ならstatement_nodeを伸ばす
         if(is_statement(now_nonterm_node->token)){
             // DEBUG
-            // cout << "statement is " << now_nonterm_node->token << endl;
+            cout << "statement is " << now_nonterm_node->token << endl;
             statement_node* next_statement_node = init_statement_node(now_nonterm_node);
             now_statement_node->next_statement_node = next_statement_node;
             now_statement_node = next_statement_node;

@@ -2,18 +2,23 @@
 #include "../tools.cpp"
 #include "../RST.cpp"
 
+// プロトタイプ宣言
+int get_variable_value_int(string id);
+
 typedef struct expr_node {
     string token;
     int value;
+    string id;
     char op;
     struct expr_node* left_node;
     struct expr_node* right_node;
 } expr_node;
 
-expr_node* init_expr_node(string token, int value, char op){
+expr_node* init_expr_node(string token, int value, string id, char op){
     expr_node* node = new expr_node;
     node->token = token;
     node->value = value;
+    node->id = id;
     node->op = op;
     node->left_node = nullptr;
     node->right_node = nullptr;
@@ -32,7 +37,7 @@ expr_node* reverse_polish_to_tree(vector<string> reverse_polish){
         // そしてstackに入れる
         if(is_in_set(op_set, rp_i)){
             char op = rp_i[0];
-            expr_node* node = init_expr_node("op", 0, op);
+            expr_node* node = init_expr_node("op", 0, "", op);
             expr_node* right_node = expr_node_stack.top();
             expr_node_stack.pop();
             expr_node* left_node = expr_node_stack.top();
@@ -43,9 +48,14 @@ expr_node* reverse_polish_to_tree(vector<string> reverse_polish){
             expr_node_stack.push(node);
         }
         // rp_iがnumber
-        else {
+        else if('0' <= rp_i[0] && rp_i[0] <= '9'){
             int number = to_num(rp_i);
-            expr_node* node = init_expr_node("number", number, '\0');
+            expr_node* node = init_expr_node("number", number, "", '\0');
+            expr_node_stack.push(node);
+        }
+        // rp_iがid
+        else {
+            expr_node* node = init_expr_node("id", 0, rp_i, '\0');
             expr_node_stack.push(node);
         }
     }
@@ -118,6 +128,9 @@ int calc_expr_node(expr_node* node){
         res = calc_expr_node(node->left_node) / calc_expr_node(node->right_node);
     }
     else {
+        if(node->token == "id"){
+            return get_variable_value_int(node->id);
+        }
         return node->value;
     }
     return res;
