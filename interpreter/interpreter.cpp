@@ -26,8 +26,15 @@ void register_variable(string type, string name){
     variable_table[name] = v_info;
 }
 void assign_value_int(string name, int value){
-    auto v_info = variable_table[name];
-    v_info.value_int = value;
+    assert(variable_table[name].type == "INT");
+    variable_table[name].value_int = value;
+}
+int get_variable_value_int(string id){
+    if(variable_table[id].type != "INT"){
+        cout << variable_table[id].type << "型は数値計算できません" << endl;
+        assert(0);
+    }
+    return variable_table[id].value_int;
 }
 void interpreter(statement_node* root){
     // ASTを走査
