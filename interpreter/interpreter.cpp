@@ -1,7 +1,4 @@
-#pragma once
-#include "../include.cpp"
-#include "../global_values.hpp"
-#include "../ast/AST.cpp"
+#include "interpreter.hpp"
 #include "intp_declaration.cpp"
 #include "intp_assign.cpp"
 #include "intp_if.cpp"

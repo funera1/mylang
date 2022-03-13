@@ -1,7 +1,4 @@
-#pragma once
-#include "../include.cpp"
-#include "../global_values.hpp"
-#include "../ast/AST.cpp"
+#include "interpreter.hpp"
 
 void intp_assign(nonterm_node* node){
     auto assign_node = node->assign_node;
