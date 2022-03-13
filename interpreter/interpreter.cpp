@@ -50,8 +50,8 @@ void interpreter(statement_node* root){
         if(node->token == "IF_STATEMENT"){
             intp_if(node);
         }
-        if(node->token == "FOR_STATEMENT"){
-            intp_for(node);
+        if(node->token == "WHILE_STATEMENT"){
+            intp_while(node);
         }
     }
 }
