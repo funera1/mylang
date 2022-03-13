@@ -19,6 +19,7 @@ int main(){
 
     input_stream = x.first;
     token_stream = x.second;
+    // DEBUG
     // for(int i = 0; i < sz(token_stream); i++)cout << token_stream[i] << endl;
     // for(auto [src, dst] : bnf_transition_list){
     //     cout << src << ": ";
@@ -60,12 +61,12 @@ int main(){
     // cout << endl << endl;
 
     // DEBUG: 構文解析のテスト
-    p.parsing(token_stream);
+    // p.parsing(token_stream);
     // DEBUG: RSTのテスト
     // node_t* node = init_node("TOKEN");
     nonterm_node* root = create_RST(token_stream, input_stream);
     // all_watch_RST(root);
     statement_node* st_root = RST_to_AST(root);
-    all_watch_AST(st_root);
+    // all_watch_AST(st_root);
     interpreter(st_root);
 }

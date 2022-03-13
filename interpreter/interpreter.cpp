@@ -1,79 +1,24 @@
-#pragma once
-#include "../include.cpp"
-#include "../global_values.hpp"
-#include "../ast/AST.cpp"
+#include "interpreter.hpp"
+#include "intp_declaration.cpp"
+#include "intp_assign.cpp"
+#include "intp_if.cpp"
+#include "intp_while.cpp"
 
-struct variable_info {
-    string type;
-    int value_int;
-};
-
-map<string, variable_info> variable_table;
-
-// すでに変数が存在するかどうか
-bool is_exist_in_variable_table(string name){
-    return ( variable_table.find(name) != variable_table.end() );
-}
-variable_info init_variable_info(){
-    variable_info v_info;
-    v_info.type = "";
-    v_info.value_int = 0;
-    return v_info;
-}
-void register_variable(string type, string name){
-    auto v_info = init_variable_info();
-    v_info.type = type;
-    variable_table[name] = v_info;
-}
-void assign_value_int(string name, int value){
-    assert(variable_table[name].type == "INT");
-    variable_table[name].value_int = value;
-}
-int get_variable_value_int(string id){
-    if(variable_table[id].type != "INT"){
-        cout << variable_table[id].type << "型は数値計算できません" << endl;
-        assert(0);
-    }
-    return variable_table[id].value_int;
-}
 void interpreter(statement_node* root){
     // ASTを走査
     auto node = root;
     while(node = get_next_statement_node(node)){
         if(node->token == "DECLARATION_STATEMENT"){
-            auto declaration_node = node->declaration_node;
-            string type = declaration_node->type;
-            string name = declaration_node->name;
-            // 変数テーブルにすでに同名の変数が存在するかチェック
-            // 存在したらアウト
-            if(is_exist_in_variable_table(name)){
-                cout << name << "はすでに登録されています" << endl;
-                assert(0);
-            }
-            else {
-                register_variable(type, name);
-            }
+            intp_declaration(node);
         }
         if(node->token == "ASSIGN_STATEMENT"){
-            auto assign_node = node->assign_node;
-            string name = assign_node->name;
-            // TODO: int以外の拡張どうする？
-            int value_int = calc_expr_node(assign_node->expr_node);
-            if(!is_exist_in_variable_table(name)){
-                cout << "まだ" << name << "は登録されていません" << endl;
-                assert(0);
-            }
-            assign_value_int(name, value_int);
-            // DEBUG
-            cout << "DEBUG: " << name << " is " << value_int << endl;
+            intp_assign(node);
         }
         if(node->token == "IF_STATEMENT"){
-            auto if_node = node->if_node;
-            int value = calc_expr_node(if_node->conditional_expr_node);
-            // 条件式の中身が1以上のときのみ実行する
-            if(value > 0){
-                interpreter(if_node->statment_node);
-            }
+            intp_if(node);
+        }
+        if(node->token == "WHILE_STATEMENT"){
+            intp_while(node);
         }
     }
 }
