@@ -5,6 +5,7 @@
 #include "ast_assign.cpp"
 #include "ast_declaration.cpp"
 #include "ast_if.cpp"
+#include "ast_while.cpp"
 
 typedef struct statement_node {
     string token;
@@ -12,6 +13,7 @@ typedef struct statement_node {
     struct assign_node* assign_node;
     struct declaration_node* declaration_node;
     struct if_node* if_node;
+    struct while_node* while_node;
 } statement_node;
 
 // 各種ノードの初期化関数
@@ -23,6 +25,7 @@ statement_node* init_root_statement_node(){
     state_node->assign_node = nullptr;
     state_node->declaration_node = nullptr;
     state_node->if_node = nullptr;
+    state_node->while_node = nullptr;
     return state_node;
 }
 
@@ -34,6 +37,7 @@ statement_node* init_statement_node(nonterm_node*& nonterm_node){
     state_node->assign_node = nullptr;
     state_node->declaration_node = nullptr;
     state_node->if_node = nullptr;
+    state_node->while_node = nullptr;
 
     if(token == "ASSIGN_STATEMENT"){
         state_node->assign_node = construct_assign_node(nonterm_node);
@@ -41,10 +45,13 @@ statement_node* init_statement_node(nonterm_node*& nonterm_node){
     }
     if(token == "DECLARATION_STATEMENT"){
         state_node->declaration_node = construct_declaration_node(nonterm_node);
-   }
-   if(token == "IF_STATEMENT"){
-       state_node->if_node = construct_if_node(nonterm_node);
-   }
+    }
+    if(token == "IF_STATEMENT"){
+        state_node->if_node = construct_if_node(nonterm_node);
+    }
+    if(token == "WHILE_STATEMENT"){
+        state_node->while_node = construct_while_node(nonterm_node);
+    }
     return state_node;
 }
 
