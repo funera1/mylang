@@ -1,6 +1,6 @@
 #include "interpreter.hpp"
 
-void intp_declaration(nonterm_node* node){
+void intp_declaration(statement_node* node){
     auto declaration_node = node->declaration_node;
     string type = declaration_node->type;
     string name = declaration_node->name;

@@ -1,6 +1,6 @@
 #include "interpreter.hpp"
 
-void intp_assign(nonterm_node* node){
+void intp_assign(statement_node* node){
     auto assign_node = node->assign_node;
     string name = assign_node->name;
     // TODO: int以外の拡張どうする？

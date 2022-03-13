@@ -1,6 +1,6 @@
 #include "interpreter.hpp"
 
-void intp_while(nonterm_node* node){
+void intp_while(statement_node* node){
     auto if_node = node->if_node;
     while(1){
         int value = calc_expr_node(if_node->conditional_expr_node);
