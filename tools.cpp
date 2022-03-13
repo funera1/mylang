@@ -1,5 +1,6 @@
 #pragma once
 #include "include.cpp"
+#include "global_values.hpp"
 
 // fileの文字列をそのまま返す
 string fileToString(string input_file_path){
@@ -60,8 +61,10 @@ string firstCheckToken(char c){
 
 // IDがtokenでないか確かめる
 string check_id_is_keyword(string s){
-	if(s == "int")return "INT";
-	if(s == "if")return "IF";
+	auto key_token = key_tokens.find(s);
+	if(key_token != key_tokens.end()){
+		return *key_token;
+	}
 	return "ID";
 }
 
