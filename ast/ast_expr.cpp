@@ -1,9 +1,4 @@
-#pragma once
-#include "../tools.cpp"
-#include "../RST.cpp"
-
-// プロトタイプ宣言
-int get_variable_value_int(string id);
+#include "AST.hpp"
 
 typedef struct expr_node {
     string token;

@@ -1,7 +1,3 @@
-#pragma once
-#include "../tools.cpp"
-#include "../RST.cpp"
-#include "ast_expr.cpp"
 #include "AST.hpp"
 
 typedef struct while_node {

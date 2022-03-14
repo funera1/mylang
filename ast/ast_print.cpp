@@ -1,9 +1,8 @@
 #include "AST.hpp"
 
-typedef struct declaration_node {
-    string type;
-    string name;
-} declaration_node;
+typedef struct print_node {
+    expr_node* expr_node;
+} print_node;
 
 declaration_node* init_declaration_node(string type, string name){
     declaration_node* node = new declaration_node;
