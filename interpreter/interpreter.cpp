@@ -3,6 +3,7 @@
 #include "intp_assign.cpp"
 #include "intp_if.cpp"
 #include "intp_while.cpp"
+#include "intp_print.cpp"
 
 void interpreter(statement_node* root){
     // ASTを走査
@@ -19,6 +20,9 @@ void interpreter(statement_node* root){
         }
         if(node->token == "WHILE_STATEMENT"){
             intp_while(node);
+        }
+        if(node->token == "PRINT_STATEMENT"){
+            intp_print(node);
         }
     }
 }

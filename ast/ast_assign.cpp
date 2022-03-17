@@ -1,6 +1,4 @@
-#pragma once
-#include "../tools.cpp"
-#include "../RST.cpp"
+#include "AST.hpp"
 
 typedef struct assign_node {
     string name;

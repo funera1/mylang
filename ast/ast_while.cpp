@@ -1,8 +1,5 @@
-#pragma once
-#include "../tools.cpp"
-#include "../RST.cpp"
-#include "ast_expr.cpp"
 #include "AST.hpp"
+#include "ast_expr.cpp"
 
 typedef struct while_node {
     // 条件式
