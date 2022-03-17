@@ -1,31 +1,27 @@
 #include "AST.hpp"
+#include "ast_expr.cpp"
 
 typedef struct print_node {
-    expr_node* expr_node;
+    expr_node* __expr_node;
 } print_node;
 
-declaration_node* init_declaration_node(string type, string name){
-    declaration_node* node = new declaration_node;
-    node->type = type;
-    node->name = name;
+print_node* init_print_node(expr_node* expr_node){
+    print_node* node = new print_node;
+    node->__expr_node = expr_node;
     return node;
 }
 
-// 引数nodeのnode->tokenはDECLARATION_STATEMENT
-// DECLARATION_STATEMEN
-// INT ID SEMICOLON の構造になっている
-declaration_node* construct_declaration_node(nonterm_node* node){
-    string type = "";
-    string name = "";
+print_node* construct_print_node(nonterm_node* node){
     nonterm_node* tmp_node = node;
 
-    // INT
+    // PRINT
     tmp_node = get_adjacent_node(tmp_node, "child");
-    type = tmp_node->token;
-    // ID
+    // LPAREN
     tmp_node = get_adjacent_node(tmp_node, "right");
-    // IDやNUMBERなどの実値をRSTと結び付けられてない
-    name = get_id_from_nonterm_node(tmp_node);
-    declaration_node* declaration_node = init_declaration_node(type, name);
-    return declaration_node;
+    // EXPR
+    tmp_node = get_adjacent_node(tmp_node, "right");
+    expr_node* __expr_node = construct_expr_node(tmp_node);
+
+    print_node* print_node = init_print_node(__expr_node);
+    return print_node;
 }
