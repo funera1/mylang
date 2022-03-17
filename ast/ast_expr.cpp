@@ -1,3 +1,4 @@
+#pragma once
 #include "AST.hpp"
 
 typedef struct expr_node {

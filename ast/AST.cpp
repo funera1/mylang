@@ -1,3 +1,4 @@
+#pragma once
 #include "AST.hpp"
 #include "ast_expr.cpp"
 #include "ast_assign.cpp"
