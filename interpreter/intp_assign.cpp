@@ -10,6 +10,4 @@ void intp_assign(statement_node* node){
         assert(0);
     }
     assign_value_int(name, value_int);
-    // DEBUG
-    cout << "DEBUG: " << name << " is " << value_int << endl;
 }
