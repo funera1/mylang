@@ -40,6 +40,15 @@ MINUS := -
 MULTI := *
 DIVISION := /
 
+// 条件式
+COND_EXPR ::= FLAG
+COND_EXPR ::= FLAG AND FLAG
+COND_EXPR ::= FLAG OR FLAG
+COND_EXPR ::= EXPR GREATER EXPR
+COND_EXPR ::= EXPR SMALLER EXPR
+FLAG ::= EXPR
+
+
 LBRACKET := {
 RBRACKET := }
 LPAREN := (
@@ -54,3 +63,9 @@ EPS := #eps
 END := $
 WHILE := while
 PRINT := print
+
+// 条件演算子
+AND := &&
+OR := ||
+GREATER := >
+SMALLER := <
