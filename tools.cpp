@@ -53,6 +53,10 @@ string firstCheckToken(char c){
 	if(c == '-')return "MINUS";
 	if(c == '*')return "MULTI";
 	if(c == '/')return "DIVISION";
+	if(c == '>')return "GREATER";
+	if(c == '<')return "SMALLER";
+	if(c == '&')return "AND";
+	if(c == '|')return "OR";
 	if(c == ' ')return "EOP";
 	if(c == '\n')return "EOP";
 	if(c == '\t')return "EOP";
