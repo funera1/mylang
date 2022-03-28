@@ -15,11 +15,8 @@ void parsing(vector<string> token_sream){
 		dp[i][token_i] = ParsingTableInfo(i+1, vector<string>{token_i});
 
 		bool changed = true;
-		int loop_count = 0;
 		while(changed){
-			loop_count++;
 			changed = false;
-			cout << i << endl;
 			// bnf_listの走査. 
 			/* 
 				変換A->abcについて
@@ -30,7 +27,7 @@ void parsing(vector<string> token_sream){
 				dp[i][A] = ParsingTableInfo(nexti, vs_1+vs_2+...)とする
 			*/
 			for(auto [src, dst] : bnf_transition_list){
-				int nexti = i+1;
+				int nexti = i;
 				vector<string> base = {};
 				bool breaked = false;
 				for(auto di : dst){
@@ -56,25 +53,10 @@ void parsing(vector<string> token_sream){
 				}
 			}
 		}
-		cout << token_i << endl;
-		for(auto [src, dst] : bnf_transition_list){
-			cout << src << ": ";
-			if(dp[i].count(src) == 0)continue;
-			auto [pos, str_list] = dp[i][src];
-			for(auto si : str_list)cout << si << " ";
-			cout << endl;
-		}
-		// for(auto [src, dst] : bnf_transition_list){
-		// 	cout << src << ": ";
-		// 	for(auto bi : dp[i][src].second)cout << bi << " ";cout << endl;
-		// }
 	}
 	// 構文解析が成功したかを判定
 	for(auto dpi : dp[0]){
-		// debug---
-		cout << dpi.first << ": ";
-		for(auto hi : dpi.second.second)cout << hi << " ";cout << endl;
-		//---
+		dpi.second.second.push_back("$");
 		if(token_sream == dpi.second.second){
 			cout << "OK: complete parsing" << endl;
 			return;
