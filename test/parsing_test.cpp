@@ -7,6 +7,7 @@
 #include "../RST.cpp"
 #include "../ast/AST.cpp"
 #include "../interpreter/interpreter.cpp"
+#include "../packrat_parsing.cpp"
 
 void dbg_print_token_stream(vector<string> token_stream){
     for(int i = 0; i < sz(token_stream); i++)cout << token_stream[i] << endl;
@@ -60,9 +61,11 @@ int main(){
 
     input_stream = x.first;
     token_stream = x.second;
+
+    parsing(token_stream);
     // DEBUG
     // dbg_print_token_stream(token_stream);
-    Parsing p;
+    // Parsing p;
 
     // DEBUG: first_set
     // dbg_check_first_set(p);
@@ -74,9 +77,9 @@ int main(){
     // p.parsing(token_stream);
     // DEBUG: RSTのテスト
     // node_t* node = init_node("TOKEN");
-    nonterm_node* root = create_RST(token_stream, input_stream);
+    // nonterm_node* root = create_RST(token_stream, input_stream);
     // all_watch_RST(root);
-    statement_node* st_root = RST_to_AST(root);
+    // statement_node* st_root = RST_to_AST(root);
     // all_watch_AST(st_root);
-    interpreter(st_root);
+    // interpreter(st_root);
 }
