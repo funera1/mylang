@@ -204,3 +204,10 @@ vector<string> convert_reverse_polish(vector<string> formula){
 	}
 	return reverse_polish;
 }
+
+vector<string> add_str_list(vector<string> dst, vector<string> src){
+	for(auto si : src){
+		dst.push_back(si);
+	}
+	return dst;
+}

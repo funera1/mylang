@@ -6,6 +6,7 @@ vector<P_src_dst> bnf_transition_list;
 // トークンの文字列から対応するtokenkindを割り当てる
 map<string, int> tokenstr_to_tokenkind;
 map<string, vector<vector<string>>> bnf_src_to_dst;
+set<string> term_and_nonterm_set;
 vector<string> nonterm_list;
 vector<string> term_list;
 string home_dir = "/home/funera1/mylang/";

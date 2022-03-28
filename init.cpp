@@ -37,6 +37,8 @@ vector<P_src_dst> create_bnf_transtion_list(){
 			else if(separator == ":="){
 				// 右辺は一つのtokenで終端記号
 				string word = getNextStr(now_line, i);
+				// bnf_transition_list[term] = {}で初期化
+				bnf_transition_list[word] = vector<string>{};
 				dst.push_back(word);
 			}
 			// それ以外ならエラー
@@ -52,8 +54,15 @@ vector<P_src_dst> create_bnf_transtion_list(){
 	return local_bnf_transition_list;
 }
 
+void construct_term_and_nonterm_set(){
+	for(auto [src, dst] : bnf_transition_list){
+		term_and_nonterm_set.insert(dst);
+	}
+}
+
 // 変数の初期化
 void init(){
 	bnf_transition_list = create_bnf_transtion_list();
+	construct_term_and_nonterm_set();
 	create_nonterm_and_term_list();
 }
