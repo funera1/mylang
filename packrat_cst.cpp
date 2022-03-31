@@ -6,6 +6,7 @@
 
 // parを親とするtreeを構築する
 // return par [[ tree ]]
+// TODO: rename, make_treeはびみょい
 vector<string> make_tree(string par, vector<string> tree){
 	vector<string> ret;
 	ret.push_back(par);
@@ -15,19 +16,19 @@ vector<string> make_tree(string par, vector<string> tree){
 	return ret;
 }
 
-// RstTableInfo(packrat_parserアルゴリズムで次見始める位置, 木を逆ポーランド記法で表したもの)
+// cstTableInfo(packrat_parserアルゴリズムで次見始める位置, 木を逆ポーランド記法で表したもの)
 // ここでのvector<string>は基本的にstackとして扱う
-using RstTableInfo = pair<int, vector<string>>;
-using RstTable = vector<map<string, RstTableInfo>>;
+using CstTableInfo = pair<int, vector<string>>;
+using CstTable = vector<map<string, cstTableInfo>>;
 
 // Packrat parsing with left recursion
-vector<string> get_rst(vector<string> token_sream){
+vector<string> get_cst(vector<string> token_sream){
 	int ts_size = sz(token_sream);
-	RstTable dp(ts_size);
+	CstTable dp(ts_size);
 	for(int i = ts_size-1; i >= 0; i--){
 		// dp[i]の初期化
 		auto token_i = token_sream[i];
-		dp[i][token_i] = RstTableInfo(i+1, vector<string>{token_i});
+		dp[i][token_i] = CstTableInfo(i+1, vector<string>{token_i});
 
 		bool changed = true;
 		map<string, int> last_update_transiton_priority;
@@ -41,7 +42,7 @@ vector<string> get_rst(vector<string> token_sream){
 				auto [nexti, vs_2] = dp[nexti][b]
 				auto [nexti, vs_3] = dp[nexti][c]
 				がそれぞれ存在するなら
-				dp[i][A] = RstTableInfo(nexti, vs_1+vs_2+...)とする
+				dp[i][A] = CstTableInfo(nexti, vs_1+vs_2+...)とする
 			*/
 			for(auto [src, dst] : bnf_transition_list){
 				// last_update_transition_priorityは1始まりとする
@@ -74,9 +75,9 @@ vector<string> get_rst(vector<string> token_sream){
 					}
 				}
 				// 最後までいけたら
-				if(seen_last_dst && dp[i][src] != RstTableInfo(nexti, base_tree)){
+				if(seen_last_dst && dp[i][src] != CstTableInfo(nexti, base_tree)){
 					changed = true;
-					dp[i][src] = RstTableInfo(nexti, base_tree);
+					dp[i][src] = CstTableInfo(nexti, base_tree);
 					last_update_transiton_priority[src] = transition_priority[src];
 				}
 			}
