@@ -15,7 +15,8 @@ vector<P_src_dst> create_bnf_transtion_list(){
 	set<string> term_set;
 	while(getline(input_bnf, now_line)){
 		// コメントはスルー
-		if(sz(now_line) >= 2 && now_line[0] == '/' && now_line[1] == '/')continue;
+		// if(sz(now_line) >= 2 && now_line[0] == '/' && now_line[1] == '/')continue;
+		if(sz(now_line) >= 1 && now_line[0] == ';')continue;
 		// 空行もスルー
 		if(now_line == "")continue;
 
