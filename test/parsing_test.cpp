@@ -8,6 +8,7 @@
 #include "../ast/AST.cpp"
 #include "../interpreter/interpreter.cpp"
 #include "../packrat_parsing.cpp"
+#include "../packrat_rst.cpp"
 
 void dbg_print_token_stream(vector<string> token_stream){
     for(int i = 0; i < sz(token_stream); i++)cout << token_stream[i] << endl;
@@ -63,6 +64,8 @@ int main(){
     token_stream = x.second;
 
     parsing(token_stream);
+    auto t = get_rst(token_stream);
+    for(auto ti : t)cout << ti << " ";cout << endl;
     // DEBUG
     // dbg_print_token_stream(token_stream);
     // Parsing p;
