@@ -4,7 +4,7 @@
 #include "tools.cpp"
 
 using ParsingTableInfo = pair<int, vector<string>>;
-using ParsingTable = vector<map<string, pair<int, vector<string>>>>;
+using ParsingTable = vector<map<string, ParsingTableInfo>>;
 // Packrat parsing with left recursion
 void parsing(vector<string> token_sream){
 	int ts_size = sz(token_sream);
@@ -43,12 +43,11 @@ void parsing(vector<string> token_sream){
 					nexti = tmpi;
 					// str_listを連結させる
 					base = add_str_list(base, str_list);
+					
 				}
 				// 最後までいけたら
 				if(!breaked && dp[i][src] != ParsingTableInfo(nexti, base)){
 					changed = true;
-					// cout << src << ": ";
-					// for(auto bi : base)cout << bi << " ";cout << endl;
 					dp[i][src] = ParsingTableInfo(nexti, base);
 				}
 			}
