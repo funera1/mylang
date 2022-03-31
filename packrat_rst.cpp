@@ -5,7 +5,7 @@
 
 
 // parを親とするtreeを構築する
-// ret par [[ tree ]]
+// return par [[ tree ]]
 vector<string> make_tree(string par, vector<string> tree){
 	vector<string> ret;
 	ret.push_back(par);
@@ -30,8 +30,10 @@ vector<string> get_rst(vector<string> token_sream){
 		dp[i][token_i] = RstTableInfo(i+1, vector<string>{token_i});
 
 		bool changed = true;
+		map<string, int> last_update_transiton_priority;
 		while(changed){
 			changed = false;
+			map<string, int> transition_priority;
 			// bnf_listの走査. 
 			/* 
 				変換A->abcについて
@@ -42,6 +44,12 @@ vector<string> get_rst(vector<string> token_sream){
 				dp[i][A] = RstTableInfo(nexti, vs_1+vs_2+...)とする
 			*/
 			for(auto [src, dst] : bnf_transition_list){
+				// last_update_transition_priorityは1始まりとする
+				// あり得ない数字で初期化
+				if(last_update_transiton_priority.count(src) == 0)last_update_transiton_priority[src] = 10000; 
+				transition_priority[src]++;
+				if(last_update_transiton_priority[src] < transition_priority[src])continue;
+
 				bool seen_last_dst = false;
 				int nexti = i;
 				vector<string> base_tree = {};
@@ -69,6 +77,7 @@ vector<string> get_rst(vector<string> token_sream){
 				if(seen_last_dst && dp[i][src] != RstTableInfo(nexti, base_tree)){
 					changed = true;
 					dp[i][src] = RstTableInfo(nexti, base_tree);
+					last_update_transiton_priority[src] = transition_priority[src];
 				}
 			}
 		}

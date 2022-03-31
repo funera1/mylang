@@ -15,8 +15,10 @@ void parsing(vector<string> token_sream){
 		dp[i][token_i] = ParsingTableInfo(i+1, vector<string>{token_i});
 
 		bool changed = true;
+		map<string, int> last_update_transiton_priority;
 		while(changed){
 			changed = false;
+			map<string, int> transition_priority;
 			// bnf_listの走査. 
 			/* 
 				変換A->abcについて
@@ -27,28 +29,35 @@ void parsing(vector<string> token_sream){
 				dp[i][A] = ParsingTableInfo(nexti, vs_1+vs_2+...)とする
 			*/
 			for(auto [src, dst] : bnf_transition_list){
+				// last_update_transition_priorityは1始まりとする
+				// あり得ない数字で初期化
+				if(last_update_transiton_priority.count(src) == 0)last_update_transiton_priority[src] = 10000; 
+				transition_priority[src]++;
+				if(last_update_transiton_priority[src] < transition_priority[src])continue;
+				
+				bool seen_last_dst = false;
 				int nexti = i;
 				vector<string> base = {};
-				bool breaked = false;
-				for(auto di : dst){
+				for(int dst_cur = 0; dst_cur < sz(dst); dst_cur++){
+					string di = dst[dst_cur];
 					if(nexti >= ts_size){
 						break;
 					}
 					// dp[nexti][di]が存在しないとき
 					if(dp[nexti].count(di) == 0){
-						breaked = true;
 						break;
 					}
 					auto [tmpi, str_list] = dp[nexti][di];
 					nexti = tmpi;
 					// str_listを連結させる
 					base = add_str_list(base, str_list);
-					
+					if(dst_cur == sz(dst) - 1)seen_last_dst = true;
 				}
 				// 最後までいけたら
-				if(!breaked && dp[i][src] != ParsingTableInfo(nexti, base)){
+				if(seen_last_dst && dp[i][src] != ParsingTableInfo(nexti, base)){
 					changed = true;
 					dp[i][src] = ParsingTableInfo(nexti, base);
+					last_update_transiton_priority[src] = transition_priority[src];
 				}
 			}
 		}
@@ -61,6 +70,8 @@ void parsing(vector<string> token_sream){
 			return;
 		}
 	}
+	auto tmp = dp[0]["PROGRAM"].second;
+	for(auto ti : tmp)cout << ti << " ";cout << endl;
 	cout << "NG: miss parsing" << endl;
 	assert(0);
 }
