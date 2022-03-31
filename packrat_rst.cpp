@@ -67,7 +67,6 @@ vector<string> get_rst(vector<string> token_sream){
 				}
 				// 最後までいけたら
 				if(seen_last_dst && dp[i][src] != RstTableInfo(nexti, base_tree)){
-					for(auto bi : base_tree)cout << bi << " ";cout << endl;
 					changed = true;
 					dp[i][src] = RstTableInfo(nexti, base_tree);
 				}
