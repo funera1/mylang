@@ -6,13 +6,14 @@
 using ParsingTableInfo = pair<int, vector<string>>;
 using ParsingTable = vector<map<string, ParsingTableInfo>>;
 // Packrat parsing with left recursion
-void parsing(vector<string> token_sream){
-	int ts_size = sz(token_sream);
-	ParsingTable dp(ts_size);
-	for(int i = ts_size-1; i >= 0; i--){
+void parsing(string input_str){
+	int input_str_size = sz(input_str);
+	ParsingTable dp(input_str_size);
+	for(int i = input_str_size-1; i >= 0; i--){
 		// dp[i]の初期化
-		auto token_i = token_sream[i];
-		dp[i][token_i] = ParsingTableInfo(i+1, vector<string>{token_i});
+		// {}で囲んでるのはcharをstringにconvertするため
+		string input_i = {input_str[i]};
+		dp[i][input_i] = ParsingTableInfo(i+1, vector<string>{input_i});
 
 		bool changed = true;
 		map<string, int> last_update_transiton_priority;
@@ -40,7 +41,7 @@ void parsing(vector<string> token_sream){
 				vector<string> base = {};
 				for(int dst_cur = 0; dst_cur < sz(dst); dst_cur++){
 					string di = dst[dst_cur];
-					if(nexti >= ts_size){
+					if(nexti >= input_str_size){
 						break;
 					}
 					// dp[nexti][di]が存在しないとき
@@ -56,6 +57,10 @@ void parsing(vector<string> token_sream){
 				// 最後までいけたら
 				if(seen_last_dst && dp[i][src] != ParsingTableInfo(nexti, base)){
 					changed = true;
+					// ---
+					cout << src << endl;
+					for(auto bi : base)cout << bi << " ";cout << endl;
+					// ---
 					dp[i][src] = ParsingTableInfo(nexti, base);
 					last_update_transiton_priority[src] = transition_priority[src];
 				}
@@ -63,9 +68,11 @@ void parsing(vector<string> token_sream){
 		}
 	}
 	// 構文解析が成功したかを判定
+	vector<string> input_stream;
+	for(char c : input_str)input_stream.push_back({c});
 	for(auto dpi : dp[0]){
-		dpi.second.second.push_back("$");
-		if(token_sream == dpi.second.second){
+		// dpi.second.second.push_back("$");
+		if(input_stream == dpi.second.second){
 			cout << "OK: complete parsing" << endl;
 			return;
 		}
