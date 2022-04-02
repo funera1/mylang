@@ -5,7 +5,7 @@
 
 
 // 文法の遷移を3重vectorに写す
-void> create_bnf_transtion_list(){
+void create_bnf_transtion_list(){
 	ifstream input_bnf = fileToIfstream(home_dir+"bnf");
 
 	// この関数で返す値
@@ -33,14 +33,18 @@ void> create_bnf_transtion_list(){
 					string word = getNextStr(now_line, i);
 					// 区切り
 					if(word == "\\"){
-						bnf_transition_list(P_src_dst(src, dst));
+						bnf_transition_list.push_back(P_src_dst(src, dst));
 						dst = vector<string>();
 					}
-					// 終端記号(""か''で囲まれているもの)
-					if((word[0] == '"' && word[sz(word)-1] == '"') || (word[0] == "'" && word[sz(word)-1] == "'")){
-						term_set.insert(word);
+					else {
+						// 終端記号(""か''で囲まれているもの)
+						if((word[0] == '"' && word[sz(word)-1] == '"') || (word[0] == '\'' && word[sz(word)-1] == '\'')){
+							// 引用符を消す
+							word = word.substr(1, sz(word)-2);
+							term_set.insert(word);
+						}
+						dst.push_back(word);
 					}
-					dst.push_back(word);
 				}
 			}
 			// それ以外ならエラー
