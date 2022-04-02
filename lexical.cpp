@@ -2,7 +2,18 @@
 #include "include.cpp"
 #include "init.cpp"
 
-// 字句解析
+// 入力記号列を\n or \t or spaceで区切ったものを返す
+string parse_input(string s){
+	string ret = "";
+	int i = 0;
+	for(int i = 0; i < sz(s); i++){
+		if(s[i] == ' ' || s[i] == '\n' || s[i] == '\t')continue;
+		ret.push_back(s[i]);
+	}
+	return ret;
+}
+
+// この関数はinput_stream[i]を与えて
 // 入力記号列strをtoken毎に分割し、
 pair<vector<string>, vector<string>> lexicalAnalysis(string str){
     vector<string> input_stream;
