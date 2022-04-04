@@ -16,3 +16,4 @@ map<string, string> key_tokens = {
     {"while", "WHILE"},
     {"print", "PRINT"}
 };
+const int INF = 1e9;
