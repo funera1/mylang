@@ -6,40 +6,51 @@
 using ParsingTableInfo = pair<int, vector<string>>;
 using ParsingTable = vector<map<string, ParsingTableInfo>>;
 
-vector<vector<int>> get_dfa(vector<string> dst){
-	// {}は繰り返し
-	// の決定性オートマトンを作成
-	// dst[i]とdst[j]に辺があればdfa[i][j]=1, else 0となる
-	int dst_size = sz(dst);
-	vector<vector<int>> dfa(dst_size, vector<int>(dst_size, 0));
-}
 
 // {}: ループ
 // state_graph[i][j] = (i-jに辺がある ? dst[j] : "")
 // 状態0としてダミーノードを設けるので1個ずれる
 vector<vector<string>> get_state_graph_by_ebnf(vector<string> dst){
+	vector<string> new_dst;
 	int state_quantity = sz(dst) + 1;
 	// state_graph[i][j]: (i, j)に辺があれば1, else 0
 	vector<vector<string>> state_graph(state_quantity, vector<string>(state_quantity, ""));
 	stack<int> loop_stack;
 	for(int i = 0; i < sz(dst); i++){
-		state_graph[i][i+1] = dst[i];
+		new_dst.push_back(dst[i]);
 		// ループ始まり
 		if(dst[i] == "{"){
-			loop_stack.push(i);
+			int cnt = 0;
+			while(dst[i] == "{"){
+				cnt++;
+				i++;
+			}
+			new_dst.push_back(dst[i]);
+			while(cnt--)loop_stack.push(sz(new_dst));
 		}
 		if(dst[i] == "}"){
 			int top = loop_stack.top();
 			// ループになっているのは{}の内側なので、i+1, i-1する
 			// TODO: ↑だめ, }}になってるときバグる
 			// TODO: {{もバグる
-			state_graph[i-1][top+1] = dst[top+1];
+			state_graph[sz(new_dst)-1][top] = dst[top];
 			loop_stack.pop();
 		}
+	}
+	for(int i = 0; i < sz(new_dst); i++){
+		state_graph[i][i+1] = new_dst[i];
 	}
 	return state_graph;
 }
 
+vector<int> get_accept_states(vector<string> dst){
+	int ret = 0; 
+	for(int i = 0; i < sz(dst); i++){
+		if(dst[i] != "{")ret = i;
+		if(dst[i] != "}")ret = i;
+	}
+	return vector<int>{ret};
+}
 
 bool update_dptable(string input_str, int trans_i, int input_start_i, ParsingTable& dp,
 					vector<int>& memo_input_continue_i, vector<vector<int>>& memo_seen_state){
@@ -48,7 +59,7 @@ bool update_dptable(string input_str, int trans_i, int input_start_i, ParsingTab
 	// 受理状態のリスト
 	// とりあえずは(ループしかないうちは)dstの最後のみが受理状態
 	if(sz(dst) == 0)return false;
-	vector<int> accept_states = {state_quantity-1};
+	vector<int> accept_states = get_accept_states(dst);
 	// 続きから始める
 	int input_continue_i = memo_input_continue_i[trans_i];
 	vector<int> seen_state = memo_seen_state[trans_i];
@@ -70,6 +81,7 @@ bool update_dptable(string input_str, int trans_i, int input_start_i, ParsingTab
 				// 辺があるとき
 				assert(state_i < sz(state_graph) && state_j < sz(state_graph[state_i]));
 				if(state_graph[state_i][state_j] != ""){
+				if(src == "id")cout << state_i << ", " << state_j << endl;
 					string token = state_graph[state_i][state_j];
 					assert(nexti < sz(dp));
 					// nextiにtokenがあるなら
@@ -113,7 +125,7 @@ void parsing(string input_str){
 		// {}で囲んでるのはcharをstringにconvertするため
 		string input_i = {input_str[i]};
 		// debug
-		// cout << input_i << endl;
+		cout << input_i << endl;
 		dp[i][input_i] = ParsingTableInfo(i+1, vector<string>{input_i});
 
 		vector<int> memo_input_continue_i(sz(bnf_transition_list), i);

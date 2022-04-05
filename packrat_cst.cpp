@@ -19,7 +19,7 @@ vector<string> make_tree(string par, vector<string> tree){
 // cstTableInfo(packrat_parserアルゴリズムで次見始める位置, 木を逆ポーランド記法で表したもの)
 // ここでのvector<string>は基本的にstackとして扱う
 using CstTableInfo = pair<int, vector<string>>;
-using CstTable = vector<map<string, cstTableInfo>>;
+using CstTable = vector<map<string, CstTableInfo>>;
 
 // Packrat parsing with left recursion
 vector<string> get_cst(vector<string> token_sream){
