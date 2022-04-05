@@ -3,6 +3,41 @@
 #include "tools.cpp"
 #include "global_values.hpp"
 
+// {}: ループ
+// state_graph[i][j] = (i-jに辺がある ? dst[j] : "")
+// 状態0としてダミーノードを設けるので1個ずれる
+vector<vector<string>> get_state_graph_by_ebnf(vector<string> dst){
+	vector<string> new_dst;
+	int state_quantity = sz(dst) + 1;
+	// state_graph[i][j]: (i, j)に辺があれば1, else 0
+	vector<vector<string>> state_graph(state_quantity, vector<string>(state_quantity, ""));
+	stack<int> loop_stack;
+	for(int i = 0; i < sz(dst); i++){
+		new_dst.push_back(dst[i]);
+		// ループ始まり
+		if(dst[i] == "{"){
+			int cnt = 0;
+			while(dst[i] == "{"){
+				cnt++;
+				i++;
+			}
+			new_dst.push_back(dst[i]);
+			while(cnt--)loop_stack.push(sz(new_dst));
+		}
+		if(dst[i] == "}"){
+			int top = loop_stack.top();
+			// ループになっているのは{}の内側なので、i+1, i-1する
+			// TODO: ↑だめ, }}になってるときバグる
+			// TODO: {{もバグる
+			state_graph[sz(new_dst)-1][top] = dst[top];
+			loop_stack.pop();
+		}
+	}
+	for(int i = 0; i < sz(new_dst); i++){
+		state_graph[i][i+1] = new_dst[i];
+	}
+	return state_graph;
+}
 
 // 文法の遷移を3重vectorに写す
 void create_bnf_transtion_list(){
