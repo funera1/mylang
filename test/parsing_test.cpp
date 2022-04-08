@@ -56,6 +56,14 @@ int main(){
     cout << x << endl;
 
 
+    cout << "[bnf_transition_list]" << endl;
+    for(auto [src, dst] : bnf_transition_list){
+        cout << src << ": ";
+        for(auto di : dst)cout << di << " ";
+        cout << endl;
+    }
+    return 0;
+
     for(auto [src, dst] : bnf_transition_list){
         cout << src << ": ";
         for(auto di : dst)cout << di << " ";
