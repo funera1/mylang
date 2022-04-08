@@ -3,44 +3,7 @@
 #include "tools.cpp"
 #include "global_values.hpp"
 
-// {}: ループ
-// state_graph[i][j] = (i-jに辺がある ? dst[j] : "")
-// 状態0としてダミーノードを設けるので1個ずれる
-vector<vector<string>> get_state_graph_by_ebnf(vector<string>& dst){
-	vector<string> new_dst;
-	int state_quantity = sz(dst) + 1;
-	// state_graph[i][j]: (i, j)に辺があれば1, else 0
-	vector<vector<string>> state_graph(state_quantity, vector<string>(state_quantity, ""));
-	stack<int> loop_stack;
-	for(int i = 0; i < sz(dst); i++){
-		// ループ始まり
-		if(dst[i] == "{"){
-			int cnt = 0;
-			while(dst[i] == "{"){
-				cnt++;
-				i++;
-			}
-			new_dst.push_back(dst[i]);
-			while(cnt--)loop_stack.push(sz(new_dst));
-		}
-		// ループ終わり
-		else if(dst[i] == "}"){
-			int top = loop_stack.top();
-			// ループになっているのは{}の内側なので、i+1, i-1する
-			// TODO: ↑だめ, }}になってるときバグる
-			// TODO: {{もバグる
-			state_graph[sz(new_dst)-1][top] = dst[top];
-			loop_stack.pop();
-		}
-		else {
-			new_dst.push_back(dst[i]);
-		}
-	}
-	for(int i = 0; i < sz(new_dst); i++){
-		state_graph[i][i+1] = new_dst[i];
-	}
-	return state_graph;
-}
+
 
 // 文法の遷移を3重vectorに写す
 void create_bnf_transtion_list(){
@@ -75,12 +38,12 @@ void create_bnf_transtion_list(){
 						dst = vector<string>();
 					}
 					else {
-						// 終端記号(""か''で囲まれているもの)
-						if((word[0] == '"' && word[sz(word)-1] == '"') || (word[0] == '\'' && word[sz(word)-1] == '\'')){
-							// 引用符を消す
-							word = word.substr(1, sz(word)-2);
-							term_set.insert(word);
-						}
+						// // 終端記号(""か''で囲まれているもの)
+						// if((word[0] == '"' && word[sz(word)-1] == '"') || (word[0] == '\'' && word[sz(word)-1] == '\'')){
+						// 	// 引用符を消す
+						// 	word = word.substr(1, sz(word)-2);
+						// 	term_set.insert(word);
+						// }
 						dst.push_back(word);
 					}
 				}
@@ -101,9 +64,73 @@ void create_bnf_transtion_list(){
 	}
 }
 
+// {}: ループ
+// dfa_graph[i][j] = (i-jに辺がある ? dst[j] : "")
+// 状態0としてダミーノードを設けるので1個ずれる
+vector<vector<string>> get_dfa(vector<string>& dst){
+	vector<string> new_dst;
+	int state_quantity = sz(dst) + 1;
+	// dfa_graph[i][j]: (i, j)に辺があれば1, else 0
+	vector<vector<string>> dfa_graph(state_quantity, vector<string>(state_quantity, ""));
+	stack<int> loop_stack;
+	for(int i = 0; i < sz(dst); i++){
+		// ループ始まり
+		if(dst[i] == "{"){
+			int cnt = 0;
+			while(dst[i] == "{"){
+				cnt++;
+				i++;
+			}
+			new_dst.push_back(dst[i]);
+			while(cnt--)loop_stack.push(sz(new_dst));
+		}
+		// ループ終わり
+		else if(dst[i] == "}"){
+			int top = loop_stack.top();
+			// ループになっているのは{}の内側なので、i+1, i-1する
+			// TODO: ↑だめ, }}になってるときバグる
+			// TODO: {{もバグる
+			dfa_graph[sz(new_dst)-1][top] = dst[top];
+			loop_stack.pop();
+		}
+		else {
+			new_dst.push_back(dst[i]);
+		}
+	}
+	for(int i = 0; i < sz(new_dst); i++){
+		dfa_graph[i][i+1] = new_dst[i];
+	}
+	// dstからオプションなどを取り除いたものに更新する
+	dst = new_dst;
+	return dfa_graph;
+}
+
+void create_dfa_graphs(){
+	for(int i = 0; i < sz(bnf_transition_list); i++){
+		auto [src, dst] = bnf_transition_list[i];
+		vector<vector<string>> dfa_graph = get_dfa(dst);
+		dfa_graphs.push_back(dfa_graph);
+		bnf_transition_list[i] = P_src_dst(src, dst);
+	}
+}
+
+void remove_quotation_from_dst(){
+	for(int bi = 0; bi < sz(bnf_transition_list); bi++){
+		auto [src, dst] = bnf_transition_list[bi];
+			for(int i = 0; i < sz(dst); i++){
+				string di = dst[i];
+				// クオーテーションを外す
+				if(di[0] == '\"' && di[sz(di)-1] == '\"')dst[i] = di.substr(1, sz(di)-2);
+				if(di[0] == '\'' && di[sz(di)-1] == '\'')dst[i] = di.substr(1, sz(di)-2);
+		}
+		bnf_transition_list[bi] = P_src_dst(src, dst);
+	}
+}
 
 // 変数の初期化
 void init(){
+	// これらの関数は全てbnf_transition_listについて作用する
 	create_bnf_transtion_list();
-	create_nonterm_and_term_list();
+	create_dfa_graphs();
+	remove_quotation_from_dst();
 }
