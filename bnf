@@ -5,20 +5,21 @@
 ; // 全ての非終端記号は必ず終端記号のみの列に収束する必要がある
 ; // 左再帰の解消が必要
 
-; PROGRAM = "{", COMPOUND, "}"
-; COMPOUND = STATEMENT, COMPOUND \ STATEMENT
+PROGRAM = "{", COMPOUND, "}"
+COMPOUND = STATEMENT COMPOUND \ STATEMENT
 
 ; // STATEMENT
-; STATEMENT = DECLARATION_STATEMENT
+STATEMENT = DECLARATION_STATEMENT
 ; STATEMENT ::= ASSIGN_STATEMENT
 ; STATEMENT ::= IF_STATEMENT
 ; STATEMENT ::= WHILE_STATEMENT
 ; STATEMENT ::= PRINT_STATEMENT
 
 ; 各STATEMENTの説明
-; DECLARATION_STATEMENT = "int", ID, ";"
+DECLARATION_STATEMENT = "int" id ";"
 id = { alphabet }
-alphabet = "a" \ "b" \ "c" \ "d" \ "e" \ "f"
+alphabet = "a" \ "b" \ "c" \ "d" \ "e" \ "f" \ "g" \ "h" \ "i" \ "j" \ "k" \ "l" \ "m" \ "n" \ "o" \ "p" \ "q" \ "r" \ "s" \ "t" \ "u" \ "v" \ "w" \ "x" \ "y" \ "z"
+
 ; ASSIGN_STATEMENT ::= ID ASSIGN EXPR SEMICOLON
 ; IF_STATEMENT ::= IF LPAREN EXPR RPAREN LBRACKET COMPOUND RBRACKET
 ; WHILE_STATEMENT ::= WHILE LPAREN EXPR RPAREN LBRACKET COMPOUND RBRACKET
