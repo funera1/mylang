@@ -39,11 +39,11 @@ void create_bnf_transtion_list(){
 					}
 					else {
 						// // 終端記号(""か''で囲まれているもの)
-						// if((word[0] == '"' && word[sz(word)-1] == '"') || (word[0] == '\'' && word[sz(word)-1] == '\'')){
-						// 	// 引用符を消す
-						// 	word = word.substr(1, sz(word)-2);
-						// 	term_set.insert(word);
-						// }
+						if((word[0] == '"' && word[sz(word)-1] == '"') || (word[0] == '\'' && word[sz(word)-1] == '\'')){
+							// 引用符を消す
+							string tmp_word = word.substr(1, sz(word)-2);
+							term_set.insert(tmp_word);
+						}
 						dst.push_back(word);
 					}
 				}
@@ -55,12 +55,11 @@ void create_bnf_transtion_list(){
 			}
 			// TODO: bnf_src_to_dstとbnf_transition_listどっちも共通した過程を踏むのにbnf_transition_listのための関数になっているので調整する
 			bnf_transition_list.push_back(P_src_dst(src, dst));
-
-			// bnf_transition_list[term] = {}で初期化
-			for(auto t : term_set){
-				bnf_transition_list.push_back(P_src_dst(t, vector<string>{}));
-			}
 		}
+	}
+	// bnf_transition_list[term] = {}で初期化
+	for(auto t : term_set){
+		bnf_transition_list.push_back(P_src_dst(t, vector<string>{}));
 	}
 }
 
@@ -122,7 +121,7 @@ void remove_quotation_from_dst(){
 				// クオーテーションを外す
 				if(di[0] == '\"' && di[sz(di)-1] == '\"')dst[i] = di.substr(1, sz(di)-2);
 				if(di[0] == '\'' && di[sz(di)-1] == '\'')dst[i] = di.substr(1, sz(di)-2);
-		}
+			}
 		bnf_transition_list[bi] = P_src_dst(src, dst);
 	}
 }
