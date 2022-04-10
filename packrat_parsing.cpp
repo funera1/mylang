@@ -7,54 +7,17 @@ using ParsingTableInfo = pair<int, vector<string>>;
 using ParsingTable = vector<map<string, ParsingTableInfo>>;
 
 
-// {}: ループ
-// state_graph[i][j] = (i-jに辺がある ? dst[j] : "")
-// 状態0としてダミーノードを設けるので1個ずれる
-vector<vector<string>> get_state_graph_by_ebnf(vector<string> dst){
-	vector<string> new_dst;
-	int state_quantity = sz(dst) + 1;
-	// state_graph[i][j]: (i, j)に辺があれば1, else 0
-	vector<vector<string>> state_graph(state_quantity, vector<string>(state_quantity, ""));
-	stack<int> loop_stack;
-	for(int i = 0; i < sz(dst); i++){
-		new_dst.push_back(dst[i]);
-		// ループ始まり
-		if(dst[i] == "{"){
-			int cnt = 0;
-			while(dst[i] == "{"){
-				cnt++;
-				i++;
-			}
-			new_dst.push_back(dst[i]);
-			while(cnt--)loop_stack.push(sz(new_dst));
-		}
-		if(dst[i] == "}"){
-			int top = loop_stack.top();
-			// ループになっているのは{}の内側なので、i+1, i-1する
-			// TODO: ↑だめ, }}になってるときバグる
-			// TODO: {{もバグる
-			state_graph[sz(new_dst)-1][top] = dst[top];
-			loop_stack.pop();
-		}
-	}
-	for(int i = 0; i < sz(new_dst); i++){
-		state_graph[i][i+1] = new_dst[i];
-	}
-	return state_graph;
-}
 
 vector<int> get_accept_states(vector<string> dst){
-	int ret = 0; 
-	for(int i = 0; i < sz(dst); i++){
-		if(dst[i] != "{")ret = i;
-		if(dst[i] != "}")ret = i;
-	}
+	int ret = sz(dst); 
 	return vector<int>{ret};
 }
 
 bool update_dptable(string input_str, int trans_i, int input_start_i, ParsingTable& dp,
 					vector<int>& memo_input_continue_i, vector<vector<int>>& memo_seen_state){
 	auto [src, dst] = bnf_transition_list[trans_i];
+	// srcが終端記号のとき
+	// dp[input_start_i][input] = ParsingTableInfo(input_start_i+1, vector<string>{src});
 	int state_quantity = sz(dst) + 1;
 	// 受理状態のリスト
 	// とりあえずは(ループしかないうちは)dstの最後のみが受理状態
@@ -64,10 +27,10 @@ bool update_dptable(string input_str, int trans_i, int input_start_i, ParsingTab
 	int input_continue_i = memo_input_continue_i[trans_i];
 	vector<int> seen_state = memo_seen_state[trans_i];
 
-	vector<string> base;
+	vector<string> base = dp[input_start_i][src].second;
 	// dstから状態遷移図の構築をする
 	// 構造はmap<pair<int, string>, vector<int>> 
-	vector<vector<string>> state_graph = get_state_graph_by_ebnf(dst);
+	vector<vector<string>> state_graph = dfa_graphs[trans_i];
 	vector<int> new_seen_state(state_quantity, 0);
 	// input_continue_iより後ろのtokenについて結合できなるなら最小の結合をしたい
 	// ここでの結合とはA->a,b,cという変換があったときinput_continue_iの後ろでa,b,cが得られた時dp[i][A]のテーブルを更新すること
@@ -81,15 +44,21 @@ bool update_dptable(string input_str, int trans_i, int input_start_i, ParsingTab
 				// 辺があるとき
 				assert(state_i < sz(state_graph) && state_j < sz(state_graph[state_i]));
 				if(state_graph[state_i][state_j] != ""){
-				if(src == "id")cout << state_i << ", " << state_j << endl;
-					string token = state_graph[state_i][state_j];
+					string dbg_keyword = "num";
+					// if(src == dbg_keyword){
+					// 	cout << "[" << dbg_keyword << "]" << endl;
+					// 	cout << state_i << ", " << state_j << ", " << state_graph[state_i][state_j] << endl;
+					// 	cout << "\\[" << dbg_keyword << "]" << endl;
+					// }
+					string now_token = state_graph[state_i][state_j];
 					assert(nexti < sz(dp));
+					
 					// nextiにtokenがあるなら
-					if(dp[nexti].count(token) == 1){
+					if(dp[nexti].count(now_token) == 1){
 						new_seen_state[state_j] = 1;
-						base = add_str_list(base, dp[nexti][token].second);
+						base = add_str_list(base, dp[nexti][now_token].second);
 						// forで++されるから1引く
-						nexti = dp[nexti][token].first;
+						nexti = dp[nexti][now_token].first;
 					}
 				}
 			}
@@ -101,9 +70,14 @@ bool update_dptable(string input_str, int trans_i, int input_start_i, ParsingTab
 			assert(0 <= accept_state && accept_state < sz(new_seen_state));
 			if(new_seen_state[accept_state]){
 				// ---
-				cout << "src: " << src << endl;
-				cout << "dst: ";
-				for(auto bi : base)cout << bi << " ";cout << endl;
+				if(src == "2_dig"){
+					cout << "[update dptable]" << endl;
+					cout << input_start_i << endl;
+					cout << "src: " << src << endl;
+					// cout << "dst: ";
+					for(auto bi : base)cout << bi << " ";cout << endl;
+					cout << "\\[update dptable]" << endl << endl;
+				}
 				// ---
 				dp[input_start_i][src] = ParsingTableInfo(nexti, base);
 				memo_input_continue_i[trans_i] = nexti;
@@ -126,8 +100,11 @@ void parsing(string input_str){
 		string input_i = {input_str[i]};
 		// debug
 		cout << input_i << endl;
+
+		// dp[i]初期状態
 		dp[i][input_i] = ParsingTableInfo(i+1, vector<string>{input_i});
 
+		// なんでvectorで持ってる?
 		vector<int> memo_input_continue_i(sz(bnf_transition_list), i);
 		// dstの最大サイズを100とする
 		const int DST_MAX_SIZE = 100;
@@ -163,6 +140,17 @@ void parsing(string input_str){
 				// dstを頭から見ていって一致しているかを確かめる
 				// これを関数化する
 				// (変換の番号, &dptable)
+				// ---
+				// debug: 2週目以降の(i, trans_i)についてupdate_dptableに渡す引数が知りたい
+				// ---
+				if(src == "2_dig"){
+					cout << "########################" << endl;
+					cout << "input_continue_i: " << memo_input_continue_i[trans_i] << endl;
+					cout << "seen_state: ";
+					for(auto s : memo_seen_state[trans_i])cout << s << " ";
+					cout << endl;
+					cout << "########################" << endl << endl;
+				}
 				bool ret_update_dptable = update_dptable(input_str, trans_i, i, dp, memo_input_continue_i, memo_seen_state);
 				// dptableが更新されたならlast_update_transition_priorityも更新する
 				if(ret_update_dptable){
