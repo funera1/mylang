@@ -16,12 +16,12 @@ vector<int> get_accept_states(vector<string> dst){
 bool update_dptable(string input_str, int trans_i, int input_start_i, ParsingTable& dp,
 					vector<int>& memo_input_continue_i, vector<vector<int>>& memo_seen_state){
 	auto [src, dst] = bnf_transition_list[trans_i];
+	cout << src << endl;
 	// srcが終端記号のとき
 	// dp[input_start_i][input] = ParsingTableInfo(input_start_i+1, vector<string>{src});
 	int state_quantity = sz(dst) + 1;
 	// 受理状態のリスト
 	// とりあえずは(ループしかないうちは)dstの最後のみが受理状態
-	if(sz(dst) == 0)return false;
 	vector<int> accept_states = get_accept_states(dst);
 	// 続きから始める
 	int input_continue_i = memo_input_continue_i[trans_i];
@@ -42,14 +42,13 @@ bool update_dptable(string input_str, int trans_i, int input_start_i, ParsingTab
 			// state_i, state_jについて辺があるかを調べたい
 			for(int state_j = 0; state_j < state_quantity; state_j++){
 				// 辺があるとき
-				assert(state_i < sz(state_graph) && state_j < sz(state_graph[state_i]));
+				if(state_i >= sz(state_graph)){
+					cout << src << endl;
+					cout << state_i << " " << sz(state_graph) << endl;
+					// cout << state_i << " " << state_j << endl;
+					assert(state_i < sz(state_graph) && state_j < sz(state_graph[state_i]));
+				}
 				if(state_graph[state_i][state_j] != ""){
-					string dbg_keyword = "num";
-					// if(src == dbg_keyword){
-					// 	cout << "[" << dbg_keyword << "]" << endl;
-					// 	cout << state_i << ", " << state_j << ", " << state_graph[state_i][state_j] << endl;
-					// 	cout << "\\[" << dbg_keyword << "]" << endl;
-					// }
 					string now_token = state_graph[state_i][state_j];
 					assert(nexti < sz(dp));
 					
@@ -57,7 +56,6 @@ bool update_dptable(string input_str, int trans_i, int input_start_i, ParsingTab
 					if(dp[nexti].count(now_token) == 1){
 						new_seen_state[state_j] = 1;
 						base = add_str_list(base, dp[nexti][now_token].second);
-						// forで++されるから1引く
 						nexti = dp[nexti][now_token].first;
 					}
 				}
@@ -70,7 +68,7 @@ bool update_dptable(string input_str, int trans_i, int input_start_i, ParsingTab
 			assert(0 <= accept_state && accept_state < sz(new_seen_state));
 			if(new_seen_state[accept_state]){
 				// ---
-				if(src == "2_dig"){
+				if(src == "STATEMENT"){
 					cout << "[update dptable]" << endl;
 					cout << input_start_i << endl;
 					cout << "src: " << src << endl;
@@ -143,14 +141,14 @@ void parsing(string input_str){
 				// ---
 				// debug: 2週目以降の(i, trans_i)についてupdate_dptableに渡す引数が知りたい
 				// ---
-				if(src == "2_dig"){
-					cout << "########################" << endl;
-					cout << "input_continue_i: " << memo_input_continue_i[trans_i] << endl;
-					cout << "seen_state: ";
-					for(auto s : memo_seen_state[trans_i])cout << s << " ";
-					cout << endl;
-					cout << "########################" << endl << endl;
-				}
+				// if(src == "2_dig"){
+				// 	cout << "########################" << endl;
+				// 	cout << "input_continue_i: " << memo_input_continue_i[trans_i] << endl;
+				// 	cout << "seen_state: ";
+				// 	for(auto s : memo_seen_state[trans_i])cout << s << " ";
+				// 	cout << endl;
+				// 	cout << "########################" << endl << endl;
+				// }
 				bool ret_update_dptable = update_dptable(input_str, trans_i, i, dp, memo_input_continue_i, memo_seen_state);
 				// dptableが更新されたならlast_update_transition_priorityも更新する
 				if(ret_update_dptable){

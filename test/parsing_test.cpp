@@ -56,19 +56,29 @@ int main(){
     cout << x << endl;
 
 
-    cout << "[bnf_transition_list]" << endl;
-    for(auto [src, dst] : bnf_transition_list){
-        cout << src << ": ";
-        for(auto di : dst)cout << di << " ";
-        cout << endl;
-    }
-    return 0;
-
-    for(auto [src, dst] : bnf_transition_list){
-        cout << src << ": ";
-        for(auto di : dst)cout << di << " ";
-        cout << endl;
-    }
+    // cout << "[bnf_transition_list]" << endl;
+    // for(auto [src, dst] : bnf_transition_list){
+    //     cout << src << ": ";
+    //     for(auto di : dst)cout << di << " ";
+    //     cout << endl;
+    // }
+    // cout << "\\[bnf_transition_list]" << endl;
+    // return 0;
+    // cout << "[graph]" << endl;
+    // auto dig_2_graph = dfa_graphs[4];
+    // for(int i = 0; i < sz(dig_2_graph); i++){
+    //     for(int j = 0; j < sz(dig_2_graph[i]); j++){
+    //         if(dig_2_graph[i][j] != ""){
+    //             cout << i << "->" << j << ": " << dig_2_graph[i][j] << endl;
+    //         }
+    //     }
+    // }
+    // cout << "\\[graph]" << endl;
+    // for(auto [src, dst] : bnf_transition_list){
+    //     cout << src << ": ";
+    //     for(auto di : dst)cout << di << " ";
+    //     cout << endl;
+    // }
     parsing(x);
     // auto t = get_rst(token_stream);
     // for(auto ti : t)cout << ti << " ";cout << endl;

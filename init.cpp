@@ -58,15 +58,22 @@ void create_bnf_transtion_list(){
 		}
 	}
 	// bnf_transition_list[term] = {}で初期化
-	for(auto t : term_set){
-		bnf_transition_list.push_back(P_src_dst(t, vector<string>{}));
+	for(string t : term_set){
+		bnf_transition_list.push_back(P_src_dst(t, vector<string>{t}));
 	}
+}
+
+string remove_quotation(string s){
+	if(s[0] == '\"' && s[sz(s)-1] == '\"')s = s.substr(1, sz(s)-2);
+	if(s[0] == '\'' && s[sz(s)-1] == '\'')s = s.substr(1, sz(s)-2);
+	return s;
 }
 
 // {}: ループ
 // dfa_graph[i][j] = (i-jに辺がある ? dst[j] : "")
 // 状態0としてダミーノードを設けるので1個ずれる
 vector<vector<string>> get_dfa(vector<string>& dst){
+	for(auto di : dst)cout << di << " ";cout << endl;
 	vector<string> new_dst;
 	int state_quantity = sz(dst) + 1;
 	// dfa_graph[i][j]: (i, j)に辺があれば1, else 0
@@ -80,19 +87,21 @@ vector<vector<string>> get_dfa(vector<string>& dst){
 				cnt++;
 				i++;
 			}
+			dst[i] = remove_quotation(dst[i]);
 			new_dst.push_back(dst[i]);
 			while(cnt--)loop_stack.push(sz(new_dst));
 		}
 		// ループ終わり
 		else if(dst[i] == "}"){
 			int top = loop_stack.top();
-			// ループになっているのは{}の内側なので、i+1, i-1する
-			// TODO: ↑だめ, }}になってるときバグる
-			// TODO: {{もバグる
-			dfa_graph[sz(new_dst)-1][top] = dst[top];
+			cout << "[ " << new_dst[top-1] << " ]" << endl;
+			cout << sz(new_dst) << "->" << top << endl;
+			cout << "\\[ " << new_dst[top-1] << " ]" << endl;
+ 			dfa_graph[sz(new_dst)][top] = new_dst[top-1];
 			loop_stack.pop();
 		}
 		else {
+			dst[i] = remove_quotation(dst[i]);
 			new_dst.push_back(dst[i]);
 		}
 	}
@@ -113,23 +122,22 @@ void create_dfa_graphs(){
 	}
 }
 
-void remove_quotation_from_dst(){
-	for(int bi = 0; bi < sz(bnf_transition_list); bi++){
-		auto [src, dst] = bnf_transition_list[bi];
-			for(int i = 0; i < sz(dst); i++){
-				string di = dst[i];
-				// クオーテーションを外す
-				if(di[0] == '\"' && di[sz(di)-1] == '\"')dst[i] = di.substr(1, sz(di)-2);
-				if(di[0] == '\'' && di[sz(di)-1] == '\'')dst[i] = di.substr(1, sz(di)-2);
-			}
-		bnf_transition_list[bi] = P_src_dst(src, dst);
-	}
-}
+// void remove_quotation_from_dst(){
+// 	for(int bi = 0; bi < sz(bnf_transition_list); bi++){
+// 		auto [src, dst] = bnf_transition_list[bi];
+// 			for(int i = 0; i < sz(dst); i++){
+// 				string di = dst[i];
+// 				// クオーテーションを外す
+// 				if(di[0] == '\"' && di[sz(di)-1] == '\"')dst[i] = di.substr(1, sz(di)-2);
+// 				if(di[0] == '\'' && di[sz(di)-1] == '\'')dst[i] = di.substr(1, sz(di)-2);
+// 			}
+// 		bnf_transition_list[bi] = P_src_dst(src, dst);
+// 	}
+// }
 
 // 変数の初期化
 void init(){
 	// これらの関数は全てbnf_transition_listについて作用する
 	create_bnf_transtion_list();
 	create_dfa_graphs();
-	remove_quotation_from_dst();
 }
