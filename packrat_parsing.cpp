@@ -27,7 +27,8 @@ bool update_dptable(string input_str, int trans_i, int input_start_i, ParsingTab
 	int input_continue_i = memo_input_continue_i[trans_i];
 	vector<int> seen_state = memo_seen_state[trans_i];
 
-	vector<string> base = dp[input_start_i][src].second;
+	// ここぽいな
+	vector<string> base = (dp[input_start_i].count(src) ? dp[input_start_i][src].second : vector<string>{});
 	// dstから状態遷移図の構築をする
 	// 構造はmap<pair<int, string>, vector<int>> 
 	vector<vector<string>> state_graph = dfa_graphs[trans_i];
@@ -71,6 +72,8 @@ bool update_dptable(string input_str, int trans_i, int input_start_i, ParsingTab
 				// ---
 				if(1){
 					cout << "[update dptable]" << endl;
+					cout << "accept_state: ";
+					for(auto ai : accept_states)cout << ai << " ";cout << endl;
 					cout << input_start_i << endl;
 					cout << "src: " << src << endl;
 					// cout << "dst: ";
@@ -152,10 +155,6 @@ void parsing(string input_str){
 				// 	cout << "########################" << endl << endl;
 				// }
 				bool ret_update_dptable = update_dptable(input_str, trans_i, i, dp, memo_input_continue_i, memo_seen_state);
-				if(dp[6].count("{") == 1){
-					cout << cnt << " " << src << endl;
-					assert(0);
-				}
 				// dptableが更新されたならlast_update_transition_priorityも更新する
 				if(ret_update_dptable){
 					last_update_transiton_priority[src] = transition_priority[src];
@@ -163,8 +162,6 @@ void parsing(string input_str){
 				changed |= ret_update_dptable;
 			}
 		}
-		// debug: break;
-		break;
 	}
 	// 構文解析が成功したかを判定
 	vector<string> input_stream;
