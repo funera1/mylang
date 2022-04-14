@@ -16,7 +16,7 @@ vector<int> get_accept_states(vector<string> dst){
 bool update_dptable(string input_str, int trans_i, int input_start_i, ParsingTable& dp,
 					vector<int>& memo_input_continue_i, vector<vector<int>>& memo_seen_state){
 	auto [src, dst] = bnf_transition_list[trans_i];
-	cout << src << endl;
+	// cout << src << endl;
 	// srcが終端記号のとき
 	// dp[input_start_i][input] = ParsingTableInfo(input_start_i+1, vector<string>{src});
 	int state_quantity = sz(dst) + 1;
@@ -41,21 +41,22 @@ bool update_dptable(string input_str, int trans_i, int input_start_i, ParsingTab
 			if(seen_state[state_i] == 0)continue;
 			// state_i, state_jについて辺があるかを調べたい
 			for(int state_j = 0; state_j < state_quantity; state_j++){
-				// 辺があるとき
-				if(state_i >= sz(state_graph)){
-					cout << src << endl;
-					cout << state_i << " " << sz(state_graph) << endl;
-					// cout << state_i << " " << state_j << endl;
-					assert(state_i < sz(state_graph) && state_j < sz(state_graph[state_i]));
-				}
+				// 範囲外参照check
+				assert(state_i < sz(state_graph) && state_j < sz(state_graph[state_i]));
 				if(state_graph[state_i][state_j] != ""){
 					string now_token = state_graph[state_i][state_j];
 					assert(nexti < sz(dp));
 					
 					// nextiにtokenがあるなら
 					if(dp[nexti].count(now_token) == 1){
+						// ---
+						cout << "FUGAAAAAAA" << endl;
+						cout << src << " " << nexti << " " << now_token << endl;
+						auto [hoge, fuga] = dp[nexti][now_token];
+						// ---
 						new_seen_state[state_j] = 1;
 						base = add_str_list(base, dp[nexti][now_token].second);
+						for(auto bi : base)cout << bi << " ";cout << endl;
 						nexti = dp[nexti][now_token].first;
 					}
 				}
@@ -68,11 +69,13 @@ bool update_dptable(string input_str, int trans_i, int input_start_i, ParsingTab
 			assert(0 <= accept_state && accept_state < sz(new_seen_state));
 			if(new_seen_state[accept_state]){
 				// ---
-				if(src == "STATEMENT"){
+				if(1){
 					cout << "[update dptable]" << endl;
 					cout << input_start_i << endl;
 					cout << "src: " << src << endl;
 					// cout << "dst: ";
+					cout << "state: " << endl;
+					for(auto si : new_seen_state)cout << si << " ";cout << endl;
 					for(auto bi : base)cout << bi << " ";cout << endl;
 					cout << "\\[update dptable]" << endl << endl;
 				}
@@ -96,10 +99,9 @@ void parsing(string input_str){
 		// dp[i]の初期化
 		// {}で囲んでるのはcharをstringにconvertするため
 		string input_i = {input_str[i]};
-		// debug
-		cout << input_i << endl;
 
 		// dp[i]初期状態
+		cout << "START: " << i << ", " << input_i << endl;
 		dp[i][input_i] = ParsingTableInfo(i+1, vector<string>{input_i});
 
 		// なんでvectorで持ってる?
@@ -115,7 +117,7 @@ void parsing(string input_str){
 		int cnt = 0; 
 		while(changed){
 			cnt++;
-			// cout << cnt << endl;
+			cout << cnt << endl;
 			changed = false;
 			map<string, int> transition_priority;
 			// bnf_listの走査. 
@@ -150,6 +152,10 @@ void parsing(string input_str){
 				// 	cout << "########################" << endl << endl;
 				// }
 				bool ret_update_dptable = update_dptable(input_str, trans_i, i, dp, memo_input_continue_i, memo_seen_state);
+				if(dp[6].count("{") == 1){
+					cout << cnt << " " << src << endl;
+					assert(0);
+				}
 				// dptableが更新されたならlast_update_transition_priorityも更新する
 				if(ret_update_dptable){
 					last_update_transiton_priority[src] = transition_priority[src];
@@ -157,6 +163,8 @@ void parsing(string input_str){
 				changed |= ret_update_dptable;
 			}
 		}
+		// debug: break;
+		break;
 	}
 	// 構文解析が成功したかを判定
 	vector<string> input_stream;
