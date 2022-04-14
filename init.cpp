@@ -38,11 +38,11 @@ void create_bnf_transtion_list(){
 						dst = vector<string>();
 					}
 					else {
-						// // 終端記号(""か''で囲まれているもの)
+						// 終端記号(""か''で囲まれているもの)
 						if((word[0] == '"' && word[sz(word)-1] == '"') || (word[0] == '\'' && word[sz(word)-1] == '\'')){
 							// 引用符を消す
-							string tmp_word = word.substr(1, sz(word)-2);
-							term_set.insert(tmp_word);
+							// string tmp_word = word.substr(1, sz(word)-2);
+							term_set.insert(word);
 						}
 						dst.push_back(word);
 					}
@@ -73,7 +73,7 @@ string remove_quotation(string s){
 // dfa_graph[i][j] = (i-jに辺がある ? dst[j] : "")
 // 状態0としてダミーノードを設けるので1個ずれる
 vector<vector<string>> get_dfa(vector<string>& dst){
-	for(auto di : dst)cout << di << " ";cout << endl;
+	// for(auto di : dst)cout << di << " ";cout << endl;
 	vector<string> new_dst;
 	int state_quantity = sz(dst) + 1;
 	// dfa_graph[i][j]: (i, j)に辺があれば1, else 0
@@ -86,6 +86,10 @@ vector<vector<string>> get_dfa(vector<string>& dst){
 			while(dst[i] == "{"){
 				cnt++;
 				i++;
+				if(i >= sz(dst)){
+					cout << dst[0] << endl;
+					assert(i < sz(dst));
+				}
 			}
 			dst[i] = remove_quotation(dst[i]);
 			new_dst.push_back(dst[i]);
@@ -122,22 +126,14 @@ void create_dfa_graphs(){
 	}
 }
 
-// void remove_quotation_from_dst(){
-// 	for(int bi = 0; bi < sz(bnf_transition_list); bi++){
-// 		auto [src, dst] = bnf_transition_list[bi];
-// 			for(int i = 0; i < sz(dst); i++){
-// 				string di = dst[i];
-// 				// クオーテーションを外す
-// 				if(di[0] == '\"' && di[sz(di)-1] == '\"')dst[i] = di.substr(1, sz(di)-2);
-// 				if(di[0] == '\'' && di[sz(di)-1] == '\'')dst[i] = di.substr(1, sz(di)-2);
-// 			}
-// 		bnf_transition_list[bi] = P_src_dst(src, dst);
-// 	}
-// }
-
 // 変数の初期化
 void init(){
 	// これらの関数は全てbnf_transition_listについて作用する
 	create_bnf_transtion_list();
 	create_dfa_graphs();
+	for(int i = 0; i < sz(bnf_transition_list); i++){
+		auto [src, dst] = bnf_transition_list[i];
+		src = remove_quotation(src);
+		bnf_transition_list[i] = P_src_dst(src, dst);
+	}
 }
