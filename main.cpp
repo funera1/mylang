@@ -1,37 +1,104 @@
 #pragma once
 #include "include.cpp"
+#include "global_values.hpp"
+#include "lexical.cpp"
 #include "init.cpp"
-#include "tools.cpp"
+#include "packrat_parsing.cpp"
+#include "packrat_cst.cpp"
 
+// void dbg_print_token_stream(vector<string> token_stream){
+//     for(int i = 0; i < sz(token_stream); i++)cout << token_stream[i] << endl;
+// }
 
-bool parsing(vector<string>& input_stream, vector<int>& token_stream){
-    // token列を文法の通りに遷移させて、間違っていないかをチェックする。
-    int i = 0; 
-	createFirstSet();
-}
+// void dbg_check_first_set(Parsing p){
+//     cout << "###CHECK FIRST SET###" << endl;
+//     for(auto [non_term, first_set] : p.first_sets){
+//         cout << non_term << ":" << endl;
+//         cout << '{';
+//         for(auto t : first_set){
+//             cout << t << ", ";
+//         }
+//         cout << '}' << endl;
+//     }
+//     cout << endl;
+// }
 
-int main() {
-	// 入力記号列を読み込む
+// void dbg_check_follow_set(Parsing p){
+//     cout << "###CHECK FOLLOW SET###" << endl;
+//     for(auto [non_term, follow_set] : p.follow_sets){
+//         cout << non_term << ":" << endl;
+//         cout << '{';
+//         for(auto t : follow_set){
+//             cout << t << ", ";
+//         }
+//         cout << '}' << endl;
+//     }
+//     cout << endl;
+// }
+
+// void dbg_check_parsing_table(Parsing p){
+//     auto t = p.create_ll_parsing_table();
+//     for(auto ti : t){
+//         auto [non_term, term] = ti.first;
+//         int num = ti.second;
+//         if(num == -1)continue;
+//         cout << non_term << " " << term << " " << num << endl;
+//     }
+//     cout << endl << endl;
+// }
+
+int main(){
 	string str = fileToString("input.txt");
-	// for(int i = 0; i < sz(str); i++)cout << i << " " << str[i] << endl;
-
-	// 初期化
-	init();
-
+    init();
+    // cout << sz(bnf_transition_list) << endl;
 	// 字句解析
-	vector<string> input_stream;
-	vector<int> token_stream;
-	auto [input_stream, token_stream] = lexicalAnalysis(str);
+	string x = parse_input(str);
+    cout << x << endl;
 
-    // 構文解析
-    // 正しい構文ならtrue, そうでないならfalseが返ってくる
-    // if(!parsing(input_stream, token_stream)){
-    //     cout << "ERROR: 構文が間違っています" << endl;
-    //     assert(-1);
+
+    // cout << "[bnf_transition_list]" << endl;
+    // for(auto [src, dst] : bnf_transition_list){
+    //     cout << src << ": ";
+    //     for(auto di : dst)cout << di << " ";
+    //     cout << endl;
     // }
-	//test
-	// int n = sz(input_stream);
-	// assert(n == sz(token_stream));
-	// for(string i : input_stream)cout << i << " ";cout << endl;
-	// for(int t : token_stream)cout << t << " ";cout << endl;
+    // cout << "\\[bnf_transition_list]" << endl;
+    // return 0;
+    // cout << "[graph]" << endl;
+    // auto dig_2_graph = dfa_graphs[4];
+    // for(int i = 0; i < sz(dig_2_graph); i++){
+    //     for(int j = 0; j < sz(dig_2_graph[i]); j++){
+    //         if(dig_2_graph[i][j] != ""){
+    //             cout << i << "->" << j << ": " << dig_2_graph[i][j] << endl;
+    //         }
+    //     }
+    // }
+    // cout << "\\[graph]" << endl;
+    // for(auto [src, dst] : bnf_transition_list){
+    //     cout << src << ": ";
+    //     for(auto di : dst)cout << di << " ";
+    //     cout << endl;
+    // }
+    parsing(x);
+    // auto t = get_rst(token_stream);
+    // for(auto ti : t)cout << ti << " ";cout << endl;
+    // DEBUG
+    // dbg_print_token_stream(token_stream);
+    // Parsing p;
+
+    // DEBUG: first_set
+    // dbg_check_first_set(p);
+    // DEBUG: follow_setが成功してるかどうか
+    // dbg_check_follow_set(p);
+    // DEBUG: parsing tableが成功してるかどうか
+    // dbg_check_parsing_table(p);
+    // DEBUG: 構文解析のテスト
+    // p.parsing(token_stream);
+    // DEBUG: RSTのテスト
+    // node_t* node = init_node("TOKEN");
+    // nonterm_node* root = create_RST(token_stream, input_stream);
+    // all_watch_RST(root);
+    // statement_node* st_root = RST_to_AST(root);
+    // all_watch_AST(st_root);
+    // interpreter(st_root);
 }
