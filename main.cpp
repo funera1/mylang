@@ -1,37 +1,72 @@
 #pragma once
 #include "include.cpp"
+#include "global_values.hpp"
+#include "lexical.cpp"
+#include "parsing.cpp"
 #include "init.cpp"
-#include "tools.cpp"
+#include "RST.cpp"
+#include "ast/AST.cpp"
+#include "interpreter/interpreter.cpp"
 
-
-bool parsing(vector<string>& input_stream, vector<int>& token_stream){
-    // token列を文法の通りに遷移させて、間違っていないかをチェックする。
-    int i = 0; 
-	createFirstSet();
-}
-
-int main() {
-	// 入力記号列を読み込む
+int main(){
 	string str = fileToString("input.txt");
-	// for(int i = 0; i < sz(str); i++)cout << i << " " << str[i] << endl;
-
-	// 初期化
-	init();
-
+    init();
+    // cout << sz(bnf_transition_list) << endl;
 	// 字句解析
 	vector<string> input_stream;
-	vector<int> token_stream;
-	auto [input_stream, token_stream] = lexicalAnalysis(str);
+	vector<string> token_stream;
+	auto x = lexicalAnalysis(str);
 
-    // 構文解析
-    // 正しい構文ならtrue, そうでないならfalseが返ってくる
-    // if(!parsing(input_stream, token_stream)){
-    //     cout << "ERROR: 構文が間違っています" << endl;
-    //     assert(-1);
+    input_stream = x.first;
+    token_stream = x.second;
+    // DEBUG
+    // for(int i = 0; i < sz(token_stream); i++)cout << token_stream[i] << endl;
+    // for(auto [src, dst] : bnf_transition_list){
+    //     cout << src << ": ";
+    //     for(auto di : dst)cout << di << ", ";
+    //     cout << endl;
     // }
-	//test
-	// int n = sz(input_stream);
-	// assert(n == sz(token_stream));
-	// for(string i : input_stream)cout << i << " ";cout << endl;
-	// for(int t : token_stream)cout << t << " ";cout << endl;
+    Parsing p;
+
+    // DEBUG: first_set
+    // cout << "###CHECK FIRST SET###" << endl;
+    // for(auto [non_term, first_set] : p.first_sets){
+    //     cout << non_term << ":" << endl;
+    //     cout << '{';
+    //     for(auto t : first_set){
+    //         cout << t << ", ";
+    //     }
+    //     cout << '}' << endl;
+    // }
+    // cout << endl;
+    // DEBUG: follow_setが成功してるかどうか
+    // cout << "###CHECK FOLLOW SET###" << endl;
+    // for(auto [non_term, follow_set] : p.follow_sets){
+    //     cout << non_term << ":" << endl;
+    //     cout << '{';
+    //     for(auto t : follow_set){
+    //         cout << t << ", ";
+    //     }
+    //     cout << '}' << endl;
+    // }
+    // cout << endl;
+    // DEBUG: parsing tableが成功してるかどうか
+    // auto t = p.create_ll_parsing_table();
+    // for(auto ti : t){
+    //     auto [non_term, term] = ti.first;
+    //     int num = ti.second;
+    //     if(num == -1)continue;
+    //     cout << non_term << " " << term << " " << num << endl;
+    // }
+    // cout << endl << endl;
+
+    // DEBUG: 構文解析のテスト
+    // p.parsing(token_stream);
+    // DEBUG: RSTのテスト
+    // node_t* node = init_node("TOKEN");
+    nonterm_node* root = create_RST(token_stream, input_stream);
+    // all_watch_RST(root);
+    statement_node* st_root = RST_to_AST(root);
+    // all_watch_AST(st_root);
+    interpreter(st_root);
 }
