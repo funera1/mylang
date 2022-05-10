@@ -80,25 +80,8 @@ int main(){
     //     cout << endl;
     // }
     parsing(x);
-    // auto t = get_rst(token_stream);
-    // for(auto ti : t)cout << ti << " ";cout << endl;
+    auto t = get_rst(token_stream);
+    for(auto ti : t)cout << ti << " ";cout << endl;
     // DEBUG
     // dbg_print_token_stream(token_stream);
-    // Parsing p;
-
-    // DEBUG: first_set
-    // dbg_check_first_set(p);
-    // DEBUG: follow_setが成功してるかどうか
-    // dbg_check_follow_set(p);
-    // DEBUG: parsing tableが成功してるかどうか
-    // dbg_check_parsing_table(p);
-    // DEBUG: 構文解析のテスト
-    // p.parsing(token_stream);
-    // DEBUG: RSTのテスト
-    // node_t* node = init_node("TOKEN");
-    // nonterm_node* root = create_RST(token_stream, input_stream);
-    // all_watch_RST(root);
-    // statement_node* st_root = RST_to_AST(root);
-    // all_watch_AST(st_root);
-    // interpreter(st_root);
 }

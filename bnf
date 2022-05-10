@@ -21,8 +21,6 @@ DECLARATION_STATEMENT = int id ";"
 int = "i" "n" "t"
 id = { alphabet }
 alphabet = "a" \ "b" \ "c" \ "d" \ "e" \ "f" \ "g" \ "h" \ "i" \ "j" \ "k" \ "l" \ "m" \ "n" \ "o" \ "p" \ "q" \ "r" \ "s" \ "t" \ "u" \ "v" \ "w" \ "x" \ "y" \ "z"
-; 2_dig = { num }
-; num = "0" \ "1"
 
 ; ASSIGN_STATEMENT ::= ID ASSIGN EXPR SEMICOLON
 ; IF_STATEMENT ::= IF LPAREN EXPR RPAREN LBRACKET COMPOUND RBRACKET
@@ -43,17 +41,3 @@ alphabet = "a" \ "b" \ "c" \ "d" \ "e" \ "f" \ "g" \ "h" \ "i" \ "j" \ "k" \ "l"
 ; MINUS := -
 ; MULTI := *
 ; DIVISION := /
-
-; LBRACKET := {
-; RBRACKET := }
-; LPAREN := (
-; RPAREN := )
-; SEMICOLON := ;
-; INT := int
-; ASSIGN := =
-; IF := if
-; ID := #id
-; NUMBER := #number
-; END := $
-; WHILE := while
-; PRINT := print
