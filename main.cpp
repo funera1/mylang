@@ -48,11 +48,11 @@
 // }
 
 int main(){
-	string str = fileToString("input.txt");
+    string str = fileToString("input.txt");
     init();
     // cout << sz(bnf_transition_list) << endl;
-	// 字句解析
-	string x = parse_input(str);
+    // 字句解析
+    string x = parse_input(str);
     cout << x << endl;
 
 
@@ -80,8 +80,8 @@ int main(){
     //     cout << endl;
     // }
     parsing(x);
-    auto t = get_rst(token_stream);
-    for(auto ti : t)cout << ti << " ";cout << endl;
+    // auto t = get_rst(token_stream);
+    // for(auto ti : t)cout << ti << " ";cout << endl;
     // DEBUG
     // dbg_print_token_stream(token_stream);
 }
