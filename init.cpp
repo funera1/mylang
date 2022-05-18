@@ -58,9 +58,9 @@ void create_bnf_transtion_list(){
 		}
 	}
 	// bnf_transition_list[term] = {}で初期化
-	for(string t : term_set){
-		bnf_transition_list.push_back(P_src_dst(t, vector<string>{t}));
-	}
+	// for(string t : term_set){
+	// 	bnf_transition_list.push_back(P_src_dst(t, vector<string>{t}));
+	// }
 }
 
 string remove_quotation(string s){

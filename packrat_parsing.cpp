@@ -3,6 +3,7 @@
 #include "global_values.hpp"
 #include "tools.cpp"
 
+// (次見る位置, 今まで)
 using ParsingTableInfo = pair<int, vector<string>>;
 using ParsingTable = vector<map<string, ParsingTableInfo>>;
 
@@ -118,6 +119,7 @@ void parsing(string input_str){
 		bool changed = true;
 		map<string, int> last_update_transiton_priority;
 		int cnt = 0; 
+        // 変更がある限りループする
 		while(changed){
 			cnt++;
 			cout << cnt << endl;
@@ -132,6 +134,7 @@ void parsing(string input_str){
 				がそれぞれ存在するなら
 				dp[i][A] = ParsingTableInfo(nexti, vs_1+vs_2+...)とする
 			*/
+            // 変換表のi番目の変換について決め打ちする
 			for(int trans_i = 0; trans_i < sz(bnf_transition_list); trans_i++){
 				auto [src, dst] = bnf_transition_list[trans_i];
 				// last_update_transition_priorityは1始まりとする
