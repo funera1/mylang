@@ -5,50 +5,30 @@
 ; // 全ての非終端記号は必ず終端記号のみの列に収束する必要がある
 ; // 左再帰の解消が必要
 
-PROGRAM ::= LBRACKET COMPOUND RBRACKET
-COMPOUND ::= STATEMENT COMPOUND
-COMPOUND ::= STATEMENT
+PROGRAM = "{" COMPOUND "}"
+COMPOUND = STATEMENT COMPOUND \ STATEMENT
 
 ; // STATEMENT
-STATEMENT ::= DECLARATION_STATEMENT
-STATEMENT ::= ASSIGN_STATEMENT
-STATEMENT ::= IF_STATEMENT
-STATEMENT ::= WHILE_STATEMENT
-STATEMENT ::= PRINT_STATEMENT
+STATEMENT = DECLARATION_STATEMENT \ ASSIGN_STATEMENT \ IF_STATEMENT \ WHILE_STATEMENT \ PRINT_STATEMENT
 
 ; 各STATEMENTの説明
-DECLARATION_STATEMENT ::= INT ID SEMICOLON
-ASSIGN_STATEMENT ::= ID ASSIGN EXPR SEMICOLON
-IF_STATEMENT ::= IF LPAREN EXPR RPAREN LBRACKET COMPOUND RBRACKET
-WHILE_STATEMENT ::= WHILE LPAREN EXPR RPAREN LBRACKET COMPOUND RBRACKET
-PRINT_STATEMENT ::= PRINT LPAREN EXPR RPAREN SEMICOLON
+DECLARATION_STATEMENT = int id ";"
+ASSIGN_STATEMENT = id "=" EXPR ";"
+; TODO:条件式の中身がEXPRにしたらエラーになる
+; IF_STATEMENT =  if "(" EXPR ")" "{" COMPOUND "}"
+; WHILE_STATEMENT = while "(" EXPR ")" "{" COMPOUND "}"
+PRINT_STATEMENT = print "(" EXPR ")" ";"
+
+int = "i" "n" "t"
+if = "i" "f"
+while = "w" "h" "i" "l" "e"
+print = "p" "r" "i" "n" "t"
+id = { alphabet }
+number = { digit }
+alphabet = "a" \ "b" \ "c" \ "d" \ "e" \ "f" \ "g" \ "h" \ "i" \ "j" \ "k" \ "l" \ "m" \ "n" \ "o" \ "p" \ "q" \ "r" \ "s" \ "t" \ "u" \ "v" \ "w" \ "x" \ "y" \ "z"
+digit = "0" \ "1" \ "2" \ "3" \ "4" \ "5" \ "6" \ "7" \ "8" \ "9"
 
 ; // 数式
-
-EXPR ::= TERM PLUS EXPR
-EXPR ::= TERM MINUS EXPR
-EXPR ::= TERM
-TERM ::= FACTOR MULTI  TERM
-TERM ::= FACTOR DIVISION TERM
-TERM ::= FACTOR
-FACTOR ::= LPAREN EXPR RPAREN
-FACTOR ::= NUMBER
-FACTOR ::= ID
-PLUS := +
-MINUS := -
-MULTI := *
-DIVISION := /
-
-LBRACKET := {
-RBRACKET := }
-LPAREN := (
-RPAREN := )
-SEMICOLON := ;
-INT := int
-ASSIGN := =
-IF := if
-ID := #id
-NUMBER := #number
-END := $
-WHILE := while
-PRINT := print
+EXPR = TERM "+" EXPR \ TERM "-" EXPR \ TERM
+TERM = FACTOR "*"  TERM \ FACTOR "/" TERM \ FACTOR
+FACTOR = "{" EXPR "}" \ number \ id

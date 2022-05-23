@@ -61,26 +61,62 @@ statement_node* init_statement_node(nonterm_node*& nonterm_node){
     return state_node;
 }
 
-// RSTをASTに変換する
-statement_node* RST_to_AST(nonterm_node* root_nonterm_node){
-    // ASTを走査する
-    nonterm_node* now_nonterm_node = root_nonterm_node;
-    statement_node* root_statement_node = init_root_statement_node();
-    statement_node* now_statement_node = root_statement_node;
-    now_nonterm_node = get_next_node(now_nonterm_node);
-    while(root_nonterm_node != now_nonterm_node){
-        // nodeがstatement関連ならstatement_nodeを伸ばす
-        if(is_statement(now_nonterm_node->token)){
-            // DEBUG
-            // cout << "statement is " << now_nonterm_node->token << endl;
-            statement_node* next_statement_node = init_statement_node(now_nonterm_node);
-            now_statement_node->next_statement_node = next_statement_node;
-            now_statement_node = next_statement_node;
+// cstをASTに変換する
+// statement_node* cst_to_AST(nonterm_node* root_nonterm_node){
+//     // ASTを走査する
+//     nonterm_node* now_nonterm_node = root_nonterm_node;
+//     statement_node* root_statement_node = init_root_statement_node();
+//     statement_node* now_statement_node = root_statement_node;
+//     now_nonterm_node = get_next_node(now_nonterm_node);
+//     while(root_nonterm_node != now_nonterm_node){
+//         // nodeがstatement関連ならstatement_nodeを伸ばす
+//         if(is_statement(now_nonterm_node->token)){
+//             // DEBUG
+//             // cout << "statement is " << now_nonterm_node->token << endl;
+//             statement_node* next_statement_node = init_statement_node(now_nonterm_node);
+//             now_statement_node->next_statement_node = next_statement_node;
+//             now_statement_node = next_statement_node;
+//         }
+//         now_nonterm_node = get_next_node(now_nonterm_node, root_nonterm_node);
+//     }
+//     cout << "AST作成完了" << endl;
+//     return root_statement_node;
+// }
+// cstをastに変換する
+vector<string> convert_cst_to_ast(vector<string> cst){
+    // cstを走査する
+    // nonterm_node* now_nonterm_node = root_nonterm_node;
+    // statement_node* root_statement_node = init_root_statement_node();
+    // statement_node* now_statement_node = root_statement_node;
+    // now_nonterm_node = get_next_node(now_nonterm_node);
+    // while(root_nonterm_node != now_nonterm_node){
+    //     // nodeがstatement関連ならstatement_nodeを伸ばす
+    //     if(is_statement(now_nonterm_node->token)){
+    //         // DEBUG
+    //         // cout << "statement is " << now_nonterm_node->token << endl;
+    //         statement_node* next_statement_node = init_statement_node(now_nonterm_node);
+    //         now_statement_node->next_statement_node = next_statement_node;
+    //         now_statement_node = next_statement_node;
+    //     }
+    //     now_nonterm_node = get_next_node(now_nonterm_node, root_nonterm_node);
+    // }
+    vector<string> ast;
+    for(int ci = 0; ci < sz(cst); ci++){
+        auto cst_i = cst[ci];
+        if(cst_i == "DECLARATION_STATEMENT"){
+            // DECLARATION_STATEMENT [[ hoge ]]となっているのでhogeの部分のみ走査する
+            int nest_count = 0;
+            while(ci++){
+                // hoge部分の走査
+                if(cst[ci] == "[[")nest_count++;
+                if(cst[ci] == "]]")nest_count--;
+                if(nest_count == 0)break;
+
+            }
         }
-        now_nonterm_node = get_next_node(now_nonterm_node, root_nonterm_node);
+
     }
-    cout << "AST作成完了" << endl;
-    return root_statement_node;
+    return ast;
 }
 
 void watch_expr_node(expr_node* node){
