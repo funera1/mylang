@@ -1,4 +1,4 @@
-#include "AST.hpp"
+#include "ast.hpp"
 #include "ast_expr.cpp"
 
 typedef struct while_node {
@@ -31,7 +31,7 @@ while_node* construct_while_node(nonterm_node*& node){
     tmp_node = get_adjacent_node(tmp_node, "right");
     // COMPOUND
     tmp_node = get_adjacent_node(tmp_node, "right");
-    statement_node* statement_node = RST_to_AST(tmp_node);
+    statement_node* statement_node = rst_to_ast(tmp_node);
     // RBRACKET
     tmp_node = get_adjacent_node(tmp_node, "right");
     node = tmp_node;

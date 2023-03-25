@@ -132,7 +132,7 @@ nonterm_node* get_next_node(nonterm_node* node, nonterm_node* root = nullptr){
 
 // 木の根を返す
 // 木は非終端記号のノードしか持たない
-nonterm_node* create_RST(vector<string> token_stream, vector<string> input_stream){
+nonterm_node* create_rst(vector<string> token_stream, vector<string> input_stream){
     // 木の根と現在地
     nonterm_node* root;
     nonterm_node* now_node;
@@ -268,7 +268,7 @@ nonterm_node* get_next_node_greedy(nonterm_node* node, map<nonterm_node*, bool> 
 
 // RSTを全部表示するプログラム
 // 親->兄弟->子の順で見せていく
-void all_watch_RST(nonterm_node* root){
+void all_watch_rst(nonterm_node* root){
     map<nonterm_node*, bool> seen;
     cout << "###### RST ######" << endl;
     nonterm_node* now_node = root;

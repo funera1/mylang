@@ -1,5 +1,5 @@
 #pragma once
-#include "AST.hpp"
+#include "ast.hpp"
 #include "ast_expr.cpp"
 #include "ast_assign.cpp"
 #include "ast_declaration.cpp"
@@ -61,8 +61,8 @@ statement_node* init_statement_node(nonterm_node*& nonterm_node){
     return state_node;
 }
 
-// cstをASTに変換する
-// statement_node* cst_to_AST(nonterm_node* root_nonterm_node){
+// cstをastに変換する
+// statement_node* cst_to_ast(nonterm_node* root_nonterm_node){
 //     // ASTを走査する
 //     nonterm_node* now_nonterm_node = root_nonterm_node;
 //     statement_node* root_statement_node = init_root_statement_node();
@@ -133,7 +133,7 @@ void watch_expr_node(expr_node* node){
     cout << "end" << endl;
 }
 
-void all_watch_AST(statement_node* node){
+void all_watch_ast(statement_node* node){
     cout << "### AST ###" << endl;
     while(node != nullptr){
         cout << node->token << endl;

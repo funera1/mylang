@@ -3,8 +3,6 @@
 #include "tools.cpp"
 #include "global_values.hpp"
 
-
-
 // 文法の遷移を3重vectorに写す
 void create_bnf_transtion_list(){
 	ifstream input_bnf = fileToIfstream(home_dir+"bnf");
