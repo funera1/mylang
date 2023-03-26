@@ -1,20 +1,15 @@
-#pragma once
-#include "include.cpp"
-#include "global_values.hpp"
-#include "tools.cpp"
+#include "include.hpp"
 
 // (次見る位置, 今まで)
-using ParsingTableInfo = pair<int, vector<string>>;
-using ParsingTable = vector<map<string, ParsingTableInfo>>;
-
-
+using ParseTableInfo = pair<int, vector<string>>;
+using ParseTable = vector<map<string, ParseTableInfo>>;
 
 vector<int> get_accept_states(vector<string> dst){
 	int ret = sz(dst); 
 	return vector<int>{ret};
 }
 
-bool update_dptable(string input_str, int trans_i, int input_start_i, ParsingTable& dp,
+bool update_dptable(string input_str, int trans_i, int input_start_i, ParseTable& dp,
 					vector<int>& memo_input_continue_i, vector<vector<int>>& memo_seen_state){
 	auto [src, dst] = bnf_transition_list[trans_i];
 	// cout << src << endl;
@@ -84,7 +79,7 @@ bool update_dptable(string input_str, int trans_i, int input_start_i, ParsingTab
 					cout << "\\[update dptable]" << endl << endl;
 				}
 				// ---
-				dp[input_start_i][src] = ParsingTableInfo(nexti, base);
+				dp[input_start_i][src] = ParseTableInfo(nexti, base);
 				memo_input_continue_i[trans_i] = nexti;
 				memo_seen_state[trans_i] = new_seen_state;
 				return true;
@@ -96,9 +91,9 @@ bool update_dptable(string input_str, int trans_i, int input_start_i, ParsingTab
 	return false;
 }
 // Packrat parsing with left recursion
-void parsing(string input_str){
+void parse(string input_str){
 	int input_str_size = sz(input_str);
-	ParsingTable dp(input_str_size);
+	ParseTable dp(input_str_size);
 	for(int i = input_str_size-1; i >= 0; i--){
 		// dp[i]の初期化
 		// {}で囲んでるのはcharをstringにconvertするため
@@ -106,7 +101,7 @@ void parsing(string input_str){
 
 		// dp[i]初期状態
 		cout << "START: " << i << ", " << input_i << endl;
-		dp[i][input_i] = ParsingTableInfo(i+1, vector<string>{input_i});
+		dp[i][input_i] = ParseTableInfo(i+1, vector<string>{input_i});
 
 		// なんでvectorで持ってる?
 		vector<int> memo_input_continue_i(sz(bnf_transition_list), i);
@@ -172,13 +167,13 @@ void parsing(string input_str){
 	for(auto dpi : dp[0]){
 		// dpi.second.second.push_back("$");
 		if(input_stream == dpi.second.second){
-			cout << "OK: complete parsing" << endl;
+			cout << "OK: complete to parse" << endl;
 			return;
 		}
 	}
 	auto tmp = dp[0]["PROGRAM"].second;
 	for(auto ti : tmp)cout << ti << " ";cout << endl;
-	cout << "NG: miss parsing" << endl;
+	cout << "NG: failed to parse" << endl;
 	assert(0);
 }
 
