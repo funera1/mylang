@@ -1,8 +1,4 @@
-#pragma once
-#include "include.cpp"
-#include "global_values.hpp"
-#include "tools.cpp"
-
+#include "include.hpp"
 
 // parを親とするtreeを構築する
 // return par [[ tree ]]

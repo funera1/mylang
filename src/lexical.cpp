@@ -1,5 +1,5 @@
 #pragma once
-#include "include.cpp"
+#include "include.hpp"
 #include "init.cpp"
 
 // 入力記号列を\n or \t or spaceで区切ったものを返す
@@ -15,7 +15,7 @@ string parse_input(string s){
 
 // この関数はinput_stream[i]を与えて
 // 入力記号列strをtoken毎に分割し、
-pair<vector<string>, vector<string>> lexicalAnalysis(string str){
+pair<vector<string>, vector<string>> lexical_analysis(string str){
     vector<string> input_stream;
     vector<string> token_stream;
 	int i = 0;
@@ -28,7 +28,7 @@ pair<vector<string>, vector<string>> lexicalAnalysis(string str){
 		}
 		string now_word = "";
 		now_word.push_back(c);
-		string now_token = firstCheckToken(c);
+		string now_token = check_first_token(c);
 		// 間違った記号を使っている時はエラー
 		if(now_token == "NUSED") {
 			cout << "ERROR: You may use wrong signs." << endl;
@@ -37,14 +37,14 @@ pair<vector<string>, vector<string>> lexicalAnalysis(string str){
 		// 一文字目で決め打ちしたtokenを先を見ることで確定させる
 		// 識別子の時. 先頭がアルファベットでそれ以降は数字かアルファベットの繰り返し
 		if(now_token == "ID"){
-			while(i + 1 < sz(str) && (firstCheckToken(str[i + 1]) == "ID" || firstCheckToken(str[i + 1]) == "NUMBER")){
+			while(i + 1 < sz(str) && (check_first_token(str[i + 1]) == "ID" || firstCheckToken(str[i + 1]) == "NUMBER")){
 				i++;
 				now_word.push_back(str[i]);
 			}
 		}
 		// 	// 数字の時. 数字が続く限り繰り返す
 		else if(now_token == "NUMBER"){
-			while(i + 1 < sz(str) && firstCheckToken(str[i + 1]) == "NUMBER"){
+			while(i + 1 < sz(str) && check_first_token(str[i + 1]) == "NUMBER"){
 				i++;
 				now_word.push_back(str[i]);
 			}

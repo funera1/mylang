@@ -1,10 +1,4 @@
-#pragma once
-#include "include.cpp"
-#include "global_values.hpp"
-#include "lexical.cpp"
-#include "init.cpp"
-#include "packrat_parsing.cpp"
-#include "packrat_cst.cpp"
+#include "include.hpp"
 
 // void dbg_print_token_stream(vector<string> token_stream){
 //     for(int i = 0; i < sz(token_stream); i++)cout << token_stream[i] << endl;
@@ -47,8 +41,12 @@
 //     cout << endl << endl;
 // }
 
-int main(){
-    string str = fileToString("input.txt");
+int main(int argc, char* argv[]){
+    if (argc != 2) {
+        cout << "argument number is invalid" << endl;
+    }
+    string input_file = argv[1];
+    string str = file_to_string(input_file);
     init();
     // cout << sz(bnf_transition_list) << endl;
     // 字句解析
@@ -79,7 +77,7 @@ int main(){
     //     for(auto di : dst)cout << di << " ";
     //     cout << endl;
     // }
-    parsing(x);
+    // parse(x);
     // auto t = get_rst(token_stream);
     // for(auto ti : t)cout << ti << " ";cout << endl;
     // DEBUG

@@ -1,9 +1,7 @@
-#pragma once
-#include "include.cpp"
-#include "global_values.hpp"
+#include "include.hpp"
 
 // fileの文字列をそのまま返す
-string fileToString(string input_file_path){
+string file_to_string(string input_file_path){
 	ifstream ifs(input_file_path);
 	// 読み込めなかったらエラー
 	if (ifs.fail()) {
@@ -15,29 +13,29 @@ string fileToString(string input_file_path){
 }
 
 // 文字がアルファベットなら1, そうでなければ0を返す
-bool charIsAlphabet(char c){
+bool is_alphabet(char c){
 	return (('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z'));
 }
 
 // 現在の位置から次の連続した文字列を取得する
-string getNextStr(string baseStr, int& now_cursol){
+string get_next_str(string base_str, int &now_cursol){
 	// 次の文字が来るまで空白とタブ文字と改行を捨てる
-	for(; now_cursol < sz(baseStr); now_cursol++){
-		if(baseStr[now_cursol] == ' ' || baseStr[now_cursol] == '\t' || baseStr[now_cursol] == '\n')continue;
+	for(; now_cursol < sz(base_str); now_cursol++){
+		if(base_str[now_cursol] == ' ' || base_str[now_cursol] == '\t' || baseStr[now_cursol] == '\n')continue;
 		break;
 	}
 	// 連続した文字列を取得する
 	string next_str = "";
-	for(; now_cursol < sz(baseStr); now_cursol++){
-		if(baseStr[now_cursol] == ' ' || baseStr[now_cursol] == '\t' || baseStr[now_cursol] == '\n')break;
-		next_str.push_back(baseStr[now_cursol]);
+	for(; now_cursol < sz(base_Str); now_cursol++){
+		if(base_str[now_cursol] == ' ' || base_str[now_cursol] == '\t' || baseStr[now_cursol] == '\n')break;
+		next_str.push_back(base_str[now_cursol]);
 	}
 	return next_str;
 }
 
 
 // 単語の一文字目でトークンを決め打ちする
-string firstCheckToken(char c){
+string first_check_token(char c){
 	if(('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z'))return "ID";
 	if('0' <= c && c <= '9')return "NUMBER";
 	if(c == ';')return "SEMICOLON";
@@ -63,7 +61,7 @@ string firstCheckToken(char c){
 	return "NUSED";
 }
 
-// IDがtokenでないか確かめる
+// IDがkeywordでないか確かめる
 string check_id_is_keyword(string s){
 	int is_key_existed = key_tokens.count(s);
 	if(is_key_existed){
@@ -80,15 +78,15 @@ bool is_term(string s){
 	else return true;
 }
 
-bool all_is_term_in_set(set<string> st){
-	bool all_is_term = true;
+bool is_all_term_in_set(set<string> st) {
+	bool is_all_term = true;
 	for(auto si : st){
-		if(!is_term(si))all_is_term = false;
+		if(!is_term(si))is_all_term = false;
 	}
-	return all_is_term;
+	return is_all_term;
 }
 
-ifstream fileToIfstream(string file_path){
+ifstream file_to_ifstream(string file_path){
 	string filename(file_path);
 	ifstream input_file(filename);
 	// fileが開かなければエラー

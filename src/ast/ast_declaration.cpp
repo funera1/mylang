@@ -1,4 +1,4 @@
-#include "AST.hpp"
+#include "ast.hpp"
 
 typedef struct declaration_node {
     string type;

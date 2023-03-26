@@ -1,4 +1,4 @@
-#include "AST.hpp"
+#include "ast.hpp"
 
 typedef struct assign_node {
     string name;

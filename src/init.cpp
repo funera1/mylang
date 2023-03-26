@@ -1,13 +1,8 @@
-#pragma once
-#include "include.cpp"
-#include "tools.cpp"
-#include "global_values.hpp"
-
-
+#include "include.hpp"
 
 // 文法の遷移を3重vectorに写す
-void create_bnf_transtion_list(){
-	ifstream input_bnf = fileToIfstream(home_dir+"bnf");
+void create_bnf_transition_list(){
+	ifstream input_bnf = file_to_ifstream(home_dir+"bnf");
 
 	// この関数で返す値
 	string now_line = "";
@@ -25,13 +20,13 @@ void create_bnf_transtion_list(){
 		{
 			int i = 0;
 			// srcの単語を取得する
-			src = getNextStr(now_line, i);
+			src = get_next_str(now_line, i);
 			// separator( ::= or := )を取得
-			string separator = getNextStr(now_line, i);
+			string separator = get_next_str(now_line, i);
 			// ::=のとき
 			if(separator == "="){
 				while(i < sz(now_line)){
-					string word = getNextStr(now_line, i);
+					string word = get_next_str(now_line, i);
 					// 区切り
 					if(word == "\\"){
 						bnf_transition_list.push_back(P_src_dst(src, dst));
@@ -129,7 +124,7 @@ void create_dfa_graphs(){
 // 変数の初期化
 void init(){
 	// これらの関数は全てbnf_transition_listについて作用する
-	create_bnf_transtion_list();
+	create_bnf_transition_list();
 	create_dfa_graphs();
 	for(int i = 0; i < sz(bnf_transition_list); i++){
 		auto [src, dst] = bnf_transition_list[i];

@@ -1,4 +1,4 @@
-#include "AST.hpp"
+#include "ast.hpp"
 #include "ast_expr.cpp"
 
 typedef struct print_node {
